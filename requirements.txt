@@ -1,5 +1,13 @@
-# local package
--e .
+albumentations==1.2.1
+numpy==1.23.3
+opencv_python_headless==4.6.0.66
+pandas==1.4.4
+scikit_learn==1.1.2
+setuptools==49.2.1
+tifffile==2022.8.12
+torch==1.12.1+cu116
+torchvision==0.13.1+cu116
+wandb==0.13.3
 
 # external requirements
 click

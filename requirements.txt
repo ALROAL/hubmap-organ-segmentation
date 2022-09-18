@@ -8,6 +8,8 @@ tifffile==2022.8.12
 torch==1.12.1+cu116
 torchvision==0.13.1+cu116
 wandb==0.13.3
+dvc
+dvc[gdrive]
 
 # external requirements
 click

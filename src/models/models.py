@@ -76,7 +76,7 @@ class Decoder(nn.Module):
             _, _, H, W = x.shape
             enc_features = self.crop(encoder_features[i], H, W)
             x = torch.cat([x, enc_features], dim=1)
-            x = self.conv_blocs[i](x)
+            x = self.conv_blocks[i](x)
         return x
 
 class UNet(nn.Module):

@@ -8,7 +8,7 @@ import albumentations as A
 import pandas as pd
 import numpy as np
 
-from data.utils import *
+from src.data.utils import *
 
 
 class HuBMAP_Dataset(torch.utils.data.Dataset):

@@ -1,4 +1,4 @@
-from main import CFG
+from config import CFG
 from pathlib import Path
 import os
 

@@ -4,7 +4,7 @@ import torch.nn.functional as F
 import torch
 import copy
 
-from main import CFG
+from config import CFG
 from models.models import build_model, save_model
 from data.create_dataloaders import prepare_train_loaders, prepare_test_loader
 import wandb

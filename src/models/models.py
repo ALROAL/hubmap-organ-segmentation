@@ -1,4 +1,4 @@
-from main import CFG
+from config import CFG
 from PATHS import MODEL_PATH
 import torch, torchvision
 import torch.nn as nn

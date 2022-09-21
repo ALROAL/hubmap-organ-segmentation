@@ -1,5 +1,5 @@
 from PATHS import TRAIN_CSV_PATH, TEST_CSV_PATH
-from main import CFG
+from config import CFG
 
 import torch
 import albumentations as A

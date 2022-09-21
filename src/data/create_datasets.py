@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from main import CFG
 from PATHS import *
 
 import cv2
@@ -9,7 +8,7 @@ import shutil
 from utils import *
 
 
-def create_datasets():
+def create_datasets(CFG):
 
     #Create folder to store cropped images
     TRAIN_IMAGES_PATH.mkdir(parents=True, exist_ok=True)

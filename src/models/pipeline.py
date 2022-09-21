@@ -1,8 +1,7 @@
 import wandb
-from main import CFG
 from models.train_model import train, test
 
-def model_pipeline():
+def model_pipeline(CFG):
     wandb.login()
     config = dict(
         model = CFG.model,

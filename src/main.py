@@ -146,5 +146,5 @@ if __name__ == "__main__":
     for key,value in vars(args).iteritems():
         setattr(CFG, key, value)
 
-    create_datasets()
-    model_pipeline()
+    create_datasets(CFG)
+    model_pipeline(CFG)

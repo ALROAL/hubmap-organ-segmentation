@@ -1,7 +1,8 @@
-from config import CFG
+from main import CFG
 from pathlib import Path
+import os
 
-DATA_PATH = Path(CFG.data_path)
+DATA_PATH = Path(CFG.data_path) if CFG.data_path else Path(os.sep.join(os.getcwd().split(os.sep)[:-1] + ["data"]))
 
 IMAGES_PATH = DATA_PATH / "images"
 ANNOTATIONS_PATH = DATA_PATH / "annotations"
@@ -15,7 +16,7 @@ TEST_IMAGES_PATH = DATA_PATH / "test_images"
 TEST_MASKS_PATH = DATA_PATH / "test_masks"
 TEST_CSV_PATH = DATA_PATH / "test.csv"
 
-MODEL_PATH = Path(CFG.model_path) / CFG.model / "model.bin"
+MODEL_PATH = (Path(CFG.model_path) if CFG.model_path else Path(os.sep.join(os.getcwd().split(os.sep)[:-1] + ["models"]))) / CFG.model / "model.bin"
 
 
 

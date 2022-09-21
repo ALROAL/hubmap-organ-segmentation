@@ -4,9 +4,9 @@ import torch.nn.functional as F
 import torch
 import copy
 
-from config import CFG
+from main import CFG
 from models.models import build_model, save_model
-from data.create_datasets import prepare_train_loaders, prepare_test_loader
+from data.create_dataloaders import prepare_train_loaders, prepare_test_loader
 import wandb
 
 #Weight initialization
@@ -96,7 +96,6 @@ def train_one_epoch(model, dataloader, criterion, optimizer, scheduler):
         
         y_pred = model(images)
         loss = criterion(y_pred, masks)
-        print(f"Batch loss: {loss}")
         loss_sum += loss.item()*batch_size
 
         wandb.log(
@@ -188,10 +187,11 @@ def train():
 def test(model):
     test_loader = prepare_test_loader()
     model.eval()
+    loss = get_loss()
     
+    iou_sum = 0
     loss_sum = 0
     n_samples = 0
-    criterion = get_loss()
     
     for images, masks in test_loader:        
         images = images.to(CFG.device, dtype=torch.float)
@@ -201,9 +201,10 @@ def test(model):
         n_samples += batch_size
         
         y_pred = model(images)
-        loss = criterion(y_pred, masks)
-        loss_sum += loss.item()*batch_size
+        iou_sum += iou_coef(y_pred, masks)
+        loss_sum += loss(y_pred, masks)
         
+    test_iou_score = iou_sum / n_samples
     test_loss = loss_sum / n_samples
     torch.cuda.empty_cache()
-    return test_loss
+    return test_loss, test_iou_score

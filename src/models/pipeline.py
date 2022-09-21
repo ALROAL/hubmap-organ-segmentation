@@ -1,5 +1,5 @@
 import wandb
-from config import CFG
+from main import CFG
 from models.train_model import train, test
 
 def model_pipeline():
@@ -18,6 +18,8 @@ def model_pipeline():
         # access all HPs through wandb.config, so logging matches execution!
         config = wandb.config
         model = train()
-        test_loss = test(model)
-
-    return model
+        test_loss, test_iou = test(model)
+        wandb.log(
+            {"test_loss": test_loss,
+            "test_iou": test_iou}
+        )

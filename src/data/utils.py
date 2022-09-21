@@ -68,3 +68,15 @@ def read_img(path):
 def read_mask(path):
     mask = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
     return mask
+
+def resize_with_padding(img, width, height):
+    H = img.shape[0]
+    W = img.shape[1]
+    delta_w = width - W
+    delta_h = height - H
+    top, bottom = delta_h//2, delta_h-(delta_h//2)
+    left, right = delta_w//2, delta_w-(delta_w//2)
+
+    color = [0, 0, 0]
+    new_im = cv2.copyMakeBorder(img, top, bottom, left, right, cv2.BORDER_CONSTANT, value=color)
+    return new_im

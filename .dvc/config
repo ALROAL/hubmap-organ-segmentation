@@ -2,3 +2,6 @@
     remote = remote_data
 ['remote "remote_data"']
     url = gdrive://1Qpww3YQ-LkcDgRRXe1cQS6KzNQnvsRDS
+    gdrive_user_credentials_file = ../mycredentials.json
+    gdrive_client_id = client-id
+    gdrive_client_secret = client-secret

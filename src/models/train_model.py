@@ -4,12 +4,12 @@ import torch.nn.functional as F
 import torch
 import copy
 
-from PATHS import CONFIG_JSON_PATH
+from src.PATHS import CONFIG_JSON_PATH
 import json
 with open(CONFIG_JSON_PATH) as f:
   CFG = json.load(f)
-from models.models import build_model, save_model
-from data.create_dataloaders import prepare_train_loaders, prepare_test_loader
+from src.models.models import build_model, save_model
+from src.data.create_dataloaders import prepare_train_loaders, prepare_test_loader
 import wandb
 
 #Weight initialization

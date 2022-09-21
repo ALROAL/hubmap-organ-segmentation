@@ -7,7 +7,7 @@ import cv2
 import pandas as pd
 from sklearn.model_selection import GroupKFold, train_test_split
 import shutil
-from data.utils import *
+from src.data.utils import *
 
 
 def create_datasets():

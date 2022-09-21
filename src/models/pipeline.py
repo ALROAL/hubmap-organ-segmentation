@@ -1,5 +1,5 @@
 import wandb
-from models.train_model import train, test
+from src.models.train_model import train, test
 from src.PATHS import CONFIG_JSON_PATH
 import json
 with open(CONFIG_JSON_PATH) as f:

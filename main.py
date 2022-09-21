@@ -3,7 +3,7 @@ from src.data.create_datasets import create_datasets
 from src.models.pipeline import model_pipeline
 import json
 from src.PATHS import CONFIG_JSON_PATH
-from config import CFG
+from src.config import CFG
 
 
 if __name__ == "__main__":

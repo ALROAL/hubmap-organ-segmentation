@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 import os
 
-CONFIG_JSON_PATH = str(Path(os.getcwd()) / "config.json")
+CONFIG_JSON_PATH = str(Path(os.getcwd()) / "src/config.json")
 with open(CONFIG_JSON_PATH) as f:
   CFG = json.load(f)
 

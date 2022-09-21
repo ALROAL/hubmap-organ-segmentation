@@ -1,4 +1,4 @@
-from PATHS import TRAIN_CSV_PATH, TEST_CSV_PATH, CONFIG_JSON_PATH
+from src.PATHS import TRAIN_CSV_PATH, TEST_CSV_PATH, CONFIG_JSON_PATH
 import json
 with open(CONFIG_JSON_PATH) as f:
   CFG = json.load(f)

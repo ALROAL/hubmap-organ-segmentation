@@ -1,4 +1,4 @@
-from PATHS import CONFIG_JSON_PATH, MODEL_PATH
+from src.PATHS import CONFIG_JSON_PATH, MODEL_PATH
 import json
 with open(CONFIG_JSON_PATH) as f:
   CFG = json.load(f)

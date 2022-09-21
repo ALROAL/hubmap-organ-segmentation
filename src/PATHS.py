@@ -6,7 +6,7 @@ CONFIG_JSON_PATH = str(Path(os.getcwd()) / "src/config.json")
 with open(CONFIG_JSON_PATH) as f:
   CFG = json.load(f)
 
-DATA_PATH = Path(CFG["data_path"]) if CFG["data_path"] else Path(os.sep.join(os.getcwd().split(os.sep)[:-1] + ["data"]))
+DATA_PATH = Path(CFG["data_path"]) if CFG["data_path"] else Path(os.sep.join(os.getcwd().split(os.sep) + ["data"]))
 
 IMAGES_PATH = DATA_PATH / "images"
 ANNOTATIONS_PATH = DATA_PATH / "annotations"

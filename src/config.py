@@ -4,7 +4,7 @@ import os
 CFG = {
     "data_path": "", #specify a diferent data path from the default "path/to/hubmap-organ-segmentation/data"
     "num_classes": 1,
-    "img_size": 512,
+    "img_size": 256,
     "model_path": "", #specify a diferent model path from the default "path/to/hubmap-organ-segmentation/models"
     "seed": 0,
     "test_size": 0.2,

@@ -101,11 +101,6 @@ def train_one_epoch(model, dataloader, criterion, optimizer, scheduler):
         loss = criterion(y_pred, masks)
         loss_sum += loss.item()*batch_size
 
-        wandb.log(
-        {"batch_loss": loss}
-        )
-
-
         # zero the parameter gradients
         optimizer.zero_grad()
         loss.backward()

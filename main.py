@@ -1,8 +1,8 @@
 import argparse
-from data.create_datasets import create_datasets
-from models.pipeline import model_pipeline
+from src.data.create_datasets import create_datasets
+from src.models.pipeline import model_pipeline
 import json
-from PATHS import CONFIG_JSON_PATH
+from src.PATHS import CONFIG_JSON_PATH
 from config import CFG
 
 

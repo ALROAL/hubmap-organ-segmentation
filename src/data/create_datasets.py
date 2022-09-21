@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from PATHS import *
-
+import json
+with open(CONFIG_JSON_PATH) as f:
+  CFG = json.load(f)
 import cv2
 import pandas as pd
 from sklearn.model_selection import GroupKFold, train_test_split
@@ -8,7 +10,7 @@ import shutil
 from data.utils import *
 
 
-def create_datasets(CFG):
+def create_datasets():
 
     #Create folder to store cropped images
     TRAIN_IMAGES_PATH.mkdir(parents=True, exist_ok=True)
@@ -20,7 +22,7 @@ def create_datasets(CFG):
     data = pd.read_csv(DATA_CSV_PATH)
 
     #Create train/test split
-    train_data, test_data = train_test_split(data, test_size=CFG.test_size, stratify=data["organ"], random_state=CFG.seed)
+    train_data, test_data = train_test_split(data, test_size=CFG["test_size"], stratify=data["organ"], random_state=CFG["seed"])
 
     id_list = []
     id_2_list = []
@@ -33,11 +35,11 @@ def create_datasets(CFG):
         mask = rle_decode(row.rle, (row.img_height, row.img_width))
 
         #Compute number of crops
-        n_rows = int(row.img_height // CFG.img_size)+1
-        n_cols = int(row.img_width // CFG.img_size)+1
+        n_rows = int(row.img_height // CFG["img_size"])+1
+        n_cols = int(row.img_width // CFG["img_size"])+1
 
-        resize_height = n_rows * CFG.img_size
-        resize_width = n_cols * CFG.img_size
+        resize_height = n_rows * CFG["img_size"]
+        resize_width = n_cols * CFG["img_size"]
 
         #Add padding for crops to be equal-sized
         img = resize_with_padding(img, resize_width, resize_height)
@@ -47,13 +49,13 @@ def create_datasets(CFG):
             for j in range(n_cols):
 
                     mask_path = TRAIN_MASKS_PATH / (str(row.id) + f"_{i}_{j}.png")
-                    mask_crop = mask[i*CFG.img_size:(i+1)*CFG.img_size, j*CFG.img_size:(j+1)*CFG.img_size]
+                    mask_crop = mask[i*CFG["img_size"]:(i+1)*CFG["img_size"], j*CFG["img_size"]:(j+1)*CFG["img_size"]]
 
                     if mask_crop.sum() <= 0:
                         continue
 
                     img_path = TRAIN_IMAGES_PATH / (str(row.id) + f"_{i}_{j}.png")
-                    img_crop = img[i*CFG.img_size:(i+1)*CFG.img_size, j*CFG.img_size:(j+1)*CFG.img_size]
+                    img_crop = img[i*CFG["img_size"]:(i+1)*CFG["img_size"], j*CFG["img_size"]:(j+1)*CFG["img_size"]]
                     
                     cv2.imwrite(str(img_path), img_crop)
                     cv2.imwrite(str(mask_path), mask_crop)
@@ -65,7 +67,7 @@ def create_datasets(CFG):
 
     df = pd.DataFrame({"id":id_list, "id_2":id_2_list, "image_path":img_path_list, "mask_path":mask_path_list})
 
-    kf = GroupKFold(n_splits=CFG.n_folds)
+    kf = GroupKFold(n_splits=CFG["n_folds"])
     for fold, (train_idx, val_idx) in enumerate(kf.split(df, groups=df['id'])):
         df.loc[val_idx, 'fold'] = fold
 

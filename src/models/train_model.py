@@ -4,7 +4,10 @@ import torch.nn.functional as F
 import torch
 import copy
 
-from config import CFG
+from PATHS import CONFIG_JSON_PATH
+import json
+with open(CONFIG_JSON_PATH) as f:
+  CFG = json.load(f)
 from models.models import build_model, save_model
 from data.create_dataloaders import prepare_train_loaders, prepare_test_loader
 import wandb
@@ -44,20 +47,20 @@ def iou_coef(y_true, y_pred, thr=0.5, dim=(2,3), epsilon=0.001):
     return iou
 
 def get_loss():
-    if CFG.loss == "BCE+SoftDice":
+    if CFG["loss"] == "BCE+SoftDice":
         return bce_soft_dice_loss
-    elif CFG.loss == "SoftDice":
+    elif CFG["loss"] == "SoftDice":
         return soft_dice_loss
-    elif CFG.loss == "BCE":
+    elif CFG["loss"] == "BCE":
         return F.binary_cross_entropy
 
 #Optimizer
 def get_optimizer(model):
-    if CFG.optimizer == 'Adam':
-        optimizer = torch.optim.Adam(model.parameters(), lr=CFG.lr)
+    if CFG["optimizer"] == 'Adam':
+        optimizer = torch.optim.Adam(model.parameters(), lr=CFG["lr"])
     
-    elif CFG.optimizer == 'AdamW':
-        optimizer = torch.optim.AdamW(model.parameters(), lr=CFG.lr, weight_decay=CFG.weight_decay)
+    elif CFG["optimizer"] == 'AdamW':
+        optimizer = torch.optim.AdamW(model.parameters(), lr=CFG["lr"], weight_decay=CFG["weight_decay"])
         
     return optimizer
 
@@ -66,13 +69,13 @@ def get_scheduler(optimizer, train_loader):
     
     num_steps = len(train_loader)
     
-    if CFG.scheduler == 'CosineAnnealingLR':
+    if CFG["scheduler"] == 'CosineAnnealingLR':
         scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=num_steps, eta_min=1e-6)
 
-    elif CFG.scheduler == 'ReduceLROnPlateau':
+    elif CFG["scheduler"] == 'ReduceLROnPlateau':
         scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.1, patience=7, threshold=0.0001, min_lr=1e-6)
 
-    elif CFG.scheduer == 'ExponentialLR':
+    elif CFG["scheduler"] == 'ExponentialLR':
         scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.85)
         
     return scheduler
@@ -87,8 +90,8 @@ def train_one_epoch(model, dataloader, criterion, optimizer, scheduler):
 
     for images, masks in dataloader:
 
-        images = images.to(CFG.device, dtype=torch.float)
-        masks  = masks.to(CFG.device, dtype=torch.float)
+        images = images.to(CFG["device"], dtype=torch.float)
+        masks  = masks.to(CFG["device"], dtype=torch.float)
 
 
         batch_size = images.size(0)
@@ -127,8 +130,8 @@ def valid_one_epoch(model, dataloader):
     criterion = get_loss()
     
     for images, masks in dataloader:        
-        images = images.to(CFG.device, dtype=torch.float)
-        masks  = masks.to(CFG.device, dtype=torch.float)
+        images = images.to(CFG["device"], dtype=torch.float)
+        masks  = masks.to(CFG["device"], dtype=torch.float)
 
         batch_size = images.size(0)
         n_samples += batch_size
@@ -148,7 +151,7 @@ def run_training(model, train_loader, val_loader, criterion, optimizer, schedule
     wandb.watch(model, log=None)
 
     best_loss = np.inf
-    for epoch in range(CFG.epochs):
+    for epoch in range(CFG["epochs"]):
         print(f"Epoch {epoch}")
         train_loss = train_one_epoch(model, train_loader, criterion, optimizer, scheduler)
         print(f"Train loss {train_loss}")
@@ -174,7 +177,7 @@ def run_training(model, train_loader, val_loader, criterion, optimizer, schedule
 
 def train():
 
-    for fold in range(CFG.n_folds):
+    for fold in range(CFG["n_folds"]):
         model = build_model()
         train_loader, val_loader = prepare_train_loaders(fold)
         criterion = get_loss()
@@ -194,8 +197,8 @@ def test(model):
     n_samples = 0
     
     for images, masks in test_loader:        
-        images = images.to(CFG.device, dtype=torch.float)
-        masks  = masks.to(CFG.device, dtype=torch.float)
+        images = images.to(CFG["device"], dtype=torch.float)
+        masks  = masks.to(CFG["device"], dtype=torch.float)
 
         batch_size = images.size(0)
         n_samples += batch_size

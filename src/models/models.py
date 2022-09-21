@@ -1,14 +1,16 @@
-from config import CFG
-from PATHS import MODEL_PATH
+from PATHS import CONFIG_JSON_PATH, MODEL_PATH
+import json
+with open(CONFIG_JSON_PATH) as f:
+  CFG = json.load(f)
 import torch, torchvision
 import torch.nn as nn
 import torch.nn.functional as F
 import wandb
 
 def build_model():
-    if CFG.model == "UNet":
+    if CFG["model"] == "UNet":
         model = UNet()
-        model.to(CFG.device)
+        model.to(CFG["device"])
     return model
 
 def load_model(path):
@@ -91,7 +93,7 @@ class UNet(nn.Module):
         out = self.head(out)
         out = nn.Sigmoid()(out)
         if self.upscale:
-            out = F.interpolate(out, (CFG.img_size, CFG.img_size))
+            out = F.interpolate(out, (CFG["img_size"], CFG["img_size"]))
         return out
 
     

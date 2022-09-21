@@ -132,5 +132,5 @@ if __name__ == "__main__":
     with open(CONFIG_JSON_PATH, 'w') as f:
         json.dump(CFG, f, indent=1)
 
-    # create_datasets()
-    # model_pipeline()
+    create_datasets()
+    model_pipeline()

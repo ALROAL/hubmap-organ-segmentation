@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from PATHS import *
+from ..PATHS import *
 import json
 with open(CONFIG_JSON_PATH) as f:
   CFG = json.load(f)

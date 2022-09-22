@@ -4,7 +4,7 @@ import torch.nn.functional as F
 import torch
 import copy
 
-from PATHS import CONFIG_JSON_PATH
+from ..PATHS import CONFIG_JSON_PATH
 import json
 with open(CONFIG_JSON_PATH) as f:
   CFG = json.load(f)

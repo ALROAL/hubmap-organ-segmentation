@@ -79,6 +79,8 @@ target/
 /data/
 # exclude virtual env by default
 /venv/
+# exclude notebooks
+/notebooks
 
 # Mac OS-specific storage files
 .DS_Store

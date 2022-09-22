@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from src.PATHS import *
+from PATHS import *
 import json
 with open(CONFIG_JSON_PATH) as f:
   CFG = json.load(f)
@@ -7,7 +7,7 @@ import cv2
 import pandas as pd
 from sklearn.model_selection import GroupKFold, train_test_split
 import shutil
-from src.data.utils import *
+from .utils import *
 
 
 def create_datasets():

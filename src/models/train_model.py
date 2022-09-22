@@ -4,12 +4,12 @@ import torch.nn.functional as F
 import torch
 import copy
 
-from src.PATHS import CONFIG_JSON_PATH
+from PATHS import CONFIG_JSON_PATH
 import json
 with open(CONFIG_JSON_PATH) as f:
   CFG = json.load(f)
-from src.models.models import build_model, save_model
-from src.data.create_dataloaders import prepare_train_loaders, prepare_test_loader
+from .models import build_model, save_model
+from data.create_dataloaders import prepare_train_loaders, prepare_test_loader
 import wandb
 
 #Weight initialization
@@ -174,6 +174,7 @@ def train():
 
     for fold in range(CFG["n_folds"]):
         model = build_model()
+        model.apply(initialize_weights)
         train_loader, val_loader = prepare_train_loaders(fold)
         criterion = get_loss()
         optimizer = get_optimizer(model)

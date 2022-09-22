@@ -1,4 +1,4 @@
-from src.PATHS import TRAIN_CSV_PATH, TEST_CSV_PATH, CONFIG_JSON_PATH
+from PATHS import TRAIN_CSV_PATH, TEST_CSV_PATH, CONFIG_JSON_PATH
 import json
 with open(CONFIG_JSON_PATH) as f:
   CFG = json.load(f)
@@ -8,7 +8,7 @@ import albumentations as A
 import pandas as pd
 import numpy as np
 
-from src.data.utils import *
+from .utils import *
 
 
 class HuBMAP_Dataset(torch.utils.data.Dataset):

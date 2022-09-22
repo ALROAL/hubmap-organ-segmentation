@@ -2,7 +2,8 @@ import json
 from pathlib import Path
 import os
 
-CONFIG_JSON_PATH = str(Path(os.getcwd()) / "src/config.json")
+SRC_PATH = os.path.dirname(os.path.abspath(__file__))
+CONFIG_JSON_PATH = str(Path(SRC_PATH) / "config.json")
 with open(CONFIG_JSON_PATH) as f:
   CFG = json.load(f)
 
@@ -20,7 +21,7 @@ TEST_IMAGES_PATH = DATA_PATH / "test_images"
 TEST_MASKS_PATH = DATA_PATH / "test_masks"
 TEST_CSV_PATH = DATA_PATH / "test.csv"
 
-MODEL_PATH = (Path(CFG["model_path"]) if CFG["model_path"] else Path(os.sep.join(os.getcwd().split(os.sep)[:-1] + ["models"]))) / CFG["model"] / "model.bin"
+MODEL_PATH = (Path(CFG["model_path"]) if CFG["model_path"] else Path(os.sep.join(SRC_PATH.split(os.sep)[:-1] + ["models"]))) / CFG["model"] / "model.bin"
 
 
 

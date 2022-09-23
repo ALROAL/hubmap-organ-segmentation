@@ -98,7 +98,7 @@ def train_one_epoch(model, dataloader, criterion, optimizer, scheduler):
         n_samples += batch_size
         
         y_pred = model(images)
-        loss = criterion(y_pred, masks)
+        loss = criterion(masks, y_pred)
         loss_sum += loss.item()*batch_size
 
         # zero the parameter gradients
@@ -132,7 +132,7 @@ def valid_one_epoch(model, dataloader):
         n_samples += batch_size
         
         y_pred = model(images)
-        loss = criterion(y_pred, masks)
+        loss = criterion(masks, y_pred)
         loss_sum += loss.item()*batch_size
         
     epoch_loss = loss_sum / n_samples
@@ -200,8 +200,8 @@ def test(model):
         n_samples += batch_size
         
         y_pred = model(images)
-        iou_sum += iou_coef(y_pred, masks)
-        loss_sum += loss(y_pred, masks)
+        iou_sum += iou_coef(masks, y_pred)
+        loss_sum += loss(masks, y_pred)
         
     test_iou_score = iou_sum / n_samples
     test_loss = loss_sum / n_samples

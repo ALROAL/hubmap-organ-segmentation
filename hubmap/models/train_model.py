@@ -161,6 +161,7 @@ def run_training(model, train_loader, val_loader, criterion, optimizer, schedule
         # deep copy the model weights
         if val_loss < best_loss:
             best_model_wts = copy.deepcopy(model.state_dict())
+            save_model(model)
 
     # load best model weights
     model.load_state_dict(best_model_wts)

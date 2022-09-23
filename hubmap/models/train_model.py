@@ -9,7 +9,7 @@ import json
 with open(CONFIG_JSON_PATH) as f:
   CFG = json.load(f)
 from .models import build_model, save_model
-from data.create_dataloaders import prepare_train_loaders, prepare_test_loader
+from ..data.create_dataloaders import prepare_train_loaders, prepare_test_loader
 import wandb
 
 #Weight initialization

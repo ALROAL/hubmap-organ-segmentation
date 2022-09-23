@@ -78,7 +78,7 @@ target/
 # exclude data from source control by default
 /data/
 # exclude virtual env by default
-/venv/
+.venv
 # exclude notebooks
 /notebooks
 

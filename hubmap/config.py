@@ -14,7 +14,7 @@ CFG = {
     "batch_size": 16,
     "loss": "BCE+SoftDice",
     "optimizer": 'Adam',
-    "lr": 1e-3,
+    "lr": 1e-4,
     "weight_decay": 1e-6,
     "scheduler": 'CosineAnnealingLR', #['CosineAnnealingLR', 'ReduceLROnPlateau', 'ExponentialLR']
     "device": "cuda:0" if torch.cuda.is_available() else "cpu",

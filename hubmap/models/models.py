@@ -21,8 +21,9 @@ def load_model(path):
 
 def save_model(model):
     MODEL_PATH.mkdir(parents=True, exist_ok=True)
-    torch.save(model.state_dict(), MODEL_PATH)
-    wandb.save(MODEL_PATH)
+    model_path = str(MODEL_PATH / "model.pth")
+    torch.save(model.state_dict(), model_path)
+    wandb.save(model_path)
 
 class ConvBlock(nn.Module):
     def __init__(self, in_ch, out_ch):

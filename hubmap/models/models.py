@@ -23,6 +23,7 @@ def save_model(model):
     MODEL_PATH.mkdir(parents=True, exist_ok=True)
     model_path = str(MODEL_PATH / "model.pth")
     torch.save(model.state_dict(), model_path)
+    print(f"saved model at {model_path}")
     wandb.save(model_path)
 
 class ConvBlock(nn.Module):

@@ -11,7 +11,7 @@ CFG = {
     "n_folds": 4,
     "model": "UNet",
     "epochs": 100,
-    "batch_size": 64,
+    "batch_size": 16,
     "loss": "BCE+SoftDice",
     "optimizer": 'Adam',
     "lr": 1e-3,

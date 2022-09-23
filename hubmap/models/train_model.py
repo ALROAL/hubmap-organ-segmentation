@@ -20,6 +20,24 @@ def initialize_weights(model):
             nn.init.xavier_normal_(m.weight.data)
 
 #Loss function
+class SoftDiceLoss(nn.Module):
+    def __init__(self, weight=None, size_average=True):
+        super(SoftDiceLoss, self).__init__()
+
+    def forward(self, inputs, targets, smooth=1):
+        
+        #comment out if your model contains a sigmoid or equivalent activation layer
+        #inputs = F.sigmoid(inputs)       
+        
+        #flatten label and prediction tensors
+        inputs = inputs.view(-1)
+        targets = targets.view(-1)
+        
+        intersection = (inputs * targets).sum()                            
+        dice = (2.*intersection + smooth)/(inputs.sum() + targets.sum() + smooth)  
+        
+        return 1 - dice
+
 def dice_coef(y_pred, y_true, thr=0.5, dim=(2,3), epsilon=0.001):
     y_true = y_true.to(torch.float32)
     y_pred = (y_pred>thr).to(torch.float32)
@@ -50,7 +68,7 @@ def get_loss():
     if CFG["loss"] == "BCE+SoftDice":
         return bce_soft_dice_loss
     elif CFG["loss"] == "SoftDice":
-        return soft_dice_loss
+        return SoftDiceLoss()
     elif CFG["loss"] == "BCE":
         return F.binary_cross_entropy
 

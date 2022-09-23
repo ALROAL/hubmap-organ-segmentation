@@ -20,7 +20,7 @@ def initialize_weights(model):
             nn.init.xavier_normal_(m.weight.data)
 
 #Loss function
-def dice_coef(y_true, y_pred, thr=0.5, dim=(2,3), epsilon=0.001):
+def dice_coef(y_pred, y_true, thr=0.5, dim=(2,3), epsilon=0.001):
     y_true = y_true.to(torch.float32)
     y_pred = (y_pred>thr).to(torch.float32)
     inter = (y_true*y_pred).sum(dim=dim)
@@ -28,17 +28,17 @@ def dice_coef(y_true, y_pred, thr=0.5, dim=(2,3), epsilon=0.001):
     dice = ((2*inter+epsilon)/(den+epsilon)).mean(dim=(1,0))
     return dice
 
-def soft_dice_loss(y_true, y_pred, dim=(2,3), epsilon=0.001):
+def soft_dice_loss(y_pred, y_true, dim=(2,3), epsilon=0.001):
     y_true = y_true.to(torch.float32)
     inter = (y_true*y_pred).sum(dim=dim)
     den = y_true.sum(dim=dim) + y_pred.sum(dim=dim)
     dice = ((2*inter+epsilon)/(den+epsilon)).mean(dim=(1,0))
     return 1-dice
 
-def bce_soft_dice_loss(y_true, y_pred, dice_gain=100):
-    return dice_gain*soft_dice_loss(y_true, y_pred) + F.binary_cross_entropy(y_true, y_pred, reduction="mean")
+def bce_soft_dice_loss(y_pred, y_true, dice_gain=100):
+    return dice_gain*soft_dice_loss(y_pred, y_true) + F.binary_cross_entropy(y_pred, y_true, reduction="mean")
 
-def iou_coef(y_true, y_pred, thr=0.5, dim=(2,3), epsilon=0.001):
+def iou_coef(y_pred, y_true, thr=0.5, dim=(2,3), epsilon=0.001):
     y_true = y_true.to(torch.float32)
     y_pred = (y_pred>thr).to(torch.float32)
     inter = (y_true*y_pred).sum(dim=dim)
@@ -98,7 +98,7 @@ def train_one_epoch(model, dataloader, criterion, optimizer, scheduler):
         n_samples += batch_size
         
         y_pred = model(images)
-        loss = criterion(masks, y_pred)
+        loss = criterion(y_pred, masks)
         loss_sum += loss.item()*batch_size
 
         # zero the parameter gradients
@@ -132,7 +132,7 @@ def valid_one_epoch(model, dataloader):
         n_samples += batch_size
         
         y_pred = model(images)
-        loss = criterion(masks, y_pred)
+        loss = criterion(y_pred, masks)
         loss_sum += loss.item()*batch_size
         
     epoch_loss = loss_sum / n_samples
@@ -200,8 +200,8 @@ def test(model):
         n_samples += batch_size
         
         y_pred = model(images)
-        iou_sum += iou_coef(masks, y_pred)
-        loss_sum += loss(masks, y_pred)
+        iou_sum += iou_coef(y_pred, masks)
+        loss_sum += loss(y_pred, masks)
         
     test_iou_score = iou_sum / n_samples
     test_loss = loss_sum / n_samples

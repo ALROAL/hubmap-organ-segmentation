@@ -33,7 +33,7 @@ class ConvBlock(nn.Module):
         self.conv_block = nn.Sequential(
             nn.Conv2d(in_ch, out_ch, 3, padding="same"),
             nn.ReLU(),
-            nn.Conv2d(out_ch, out_ch, 3)
+            nn.Conv2d(out_ch, out_ch, 3, padding="same")
         )
 
     def forward(self, x):

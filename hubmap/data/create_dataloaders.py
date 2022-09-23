@@ -64,12 +64,12 @@ data_transforms = {
             A.CLAHE(clip_limit=2),
             A.RandomBrightnessContrast(),            
         ], p=0.4),
-        #A.Normalize(),
+        A.ToFloat(255),
     ]),
     
     "valid": A.Compose([
         A.Resize(CFG["img_size"], CFG["img_size"], interpolation=cv2.INTER_NEAREST),
-        #A.Normalize(),
+        A.ToFloat(255),
         ], p=1.0),
 }
 

@@ -65,12 +65,12 @@ def iou_coef(y_pred, y_true, thr=0.5, dim=(2,3), epsilon=0.001):
     return iou
 
 def get_loss():
-    if CFG["loss"] == "BCE+SoftDice":
-        return bce_soft_dice_loss
-    elif CFG["loss"] == "SoftDice":
-        return SoftDiceLoss()
-    elif CFG["loss"] == "BCE":
-        return F.binary_cross_entropy
+    # if CFG["loss"] == "BCE+SoftDice":
+    #     return bce_soft_dice_loss
+    # elif CFG["loss"] == "SoftDice":
+    #     return SoftDiceLoss()
+    # elif CFG["loss"] == "BCE":
+    return nn.BCELoss()
 
 #Optimizer
 def get_optimizer(model):

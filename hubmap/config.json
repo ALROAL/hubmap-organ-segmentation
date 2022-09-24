@@ -8,7 +8,7 @@
  "n_folds": 5,
  "model": "UNet",
  "epochs": 10,
- "batch_size": 128,
+ "batch_size": 16,
  "loss": "BCE+SoftDice",
  "optimizer": "Adam",
  "lr": 0.001,

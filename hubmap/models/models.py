@@ -7,14 +7,14 @@ import torch.nn as nn
 import torch.nn.functional as F
 import wandb
 
-def build_model():
-    if CFG["model"] == "UNet":
+def build_model(model_type=CFG["model"], device=CFG["device"]):
+    if model_type == "UNet":
         model = UNet()
-        model.to(CFG["device"])
+        model.to(device)
     return model
 
-def load_model(path):
-    model = build_model()
+def load_model(model_type, path, device=CFG["device"]):
+    model = build_model(model_type, device)
     model.load_state_dict(torch.load(path))
     model.eval()
     return model
@@ -24,7 +24,6 @@ def save_model(model):
     model_path = str(MODEL_PATH / "model.pth")
     torch.save(model.state_dict(), model_path)
     print(f"saved model at {model_path}")
-    wandb.save(model_path)
 
 class ConvBlock(nn.Module):
     def __init__(self, in_ch, out_ch):

@@ -25,11 +25,11 @@ def visualize_random_segmentations(model_type, path, dataset="val", val_fold=0, 
     all_segmented_images = []
     all_masks = []
     for _ in range(n_batches):
-        for images, masks in next(iter(data_loader)):
-            segmented_images = model(images)
-            all_images.append(images)
-            all_segmented_images.append(segmented_images)
-            all_masks.append(masks)
+        images, masks = next(iter(data_loader))
+        segmented_images = model(images)
+        all_images.append(images)
+        all_segmented_images.append(segmented_images)
+        all_masks.append(masks)
     
     all_images = torch.cat(all_images[:n]).permute(0,2,3,1).cpu().detach()
     all_segmented_images = torch.cat(all_segmented_images[:n]).permute(0,2,3,1).cpu().detach()

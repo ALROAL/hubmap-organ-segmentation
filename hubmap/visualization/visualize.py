@@ -17,7 +17,7 @@ def visualize_random_segmentations(model_type, path, dataset="val", val_fold=0, 
     elif dataset=="train":
         data_loader, _ = prepare_train_loaders(val_fold)
 
-    model = load_model(model_type, path, device=CFG["device"])
+    model = load_model(model_type, path, device)
 
     n_batches = int(n / data_loader.batch_size) + 1
 
@@ -26,7 +26,11 @@ def visualize_random_segmentations(model_type, path, dataset="val", val_fold=0, 
     all_masks = []
     for _ in range(n_batches):
         images, masks = next(iter(data_loader))
+        images = images.to(device, dtype=torch.float)
+        masks  = masks.to(device, dtype=torch.float)
+
         segmented_images = model(images)
+
         all_images.append(images)
         all_segmented_images.append(segmented_images)
         all_masks.append(masks)

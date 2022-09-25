@@ -30,6 +30,7 @@ def visualize_random_segmentations(model_type, path, dataset="val", val_fold=0, 
         masks  = masks.to(device, dtype=torch.float)
 
         segmented_images = model(images)
+        segmented_images = (segmented_images>0.5).to(dtype=torch.float)
 
         all_images.append(images)
         all_segmented_images.append(segmented_images)

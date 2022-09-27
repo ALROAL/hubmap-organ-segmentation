@@ -11,9 +11,9 @@ import matplotlib.pyplot as plt
 def visualize_random_segmentations(model_type, path, dataset="val", val_fold=0, n=5, device=CFG["device"]):
 
     if dataset=="test":
-        data_loader = prepare_test_loader()
+        data_loader = prepare_test_loader(shuffle=True)
     elif dataset=="val":
-        _, data_loader = prepare_train_loaders(val_fold)
+        _, data_loader = prepare_train_loaders(val_fold, val_shuffle=True)
     elif dataset=="train":
         data_loader, _ = prepare_train_loaders(val_fold)
 

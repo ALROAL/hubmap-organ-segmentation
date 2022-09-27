@@ -53,8 +53,8 @@ def soft_dice_loss(y_pred, y_true, dim=(2,3), epsilon=0.001):
     dice = ((2*inter+epsilon)/(den+epsilon)).mean(dim=(1,0))
     return 1-dice
 
-def bce_soft_dice_loss(y_pred, y_true, dice_gain=100):
-    return dice_gain*soft_dice_loss(y_pred, y_true) + F.binary_cross_entropy(y_pred, y_true, reduction="mean")
+def bce_soft_dice_loss(y_pred, y_true):
+    return (soft_dice_loss(y_pred, y_true) + nn.BCELoss()(y_pred, y_true))/2
 
 def iou_coef(y_pred, y_true, thr=0.5, dim=(2,3), epsilon=0.001):
     y_true = y_true.to(torch.float32)
@@ -65,12 +65,12 @@ def iou_coef(y_pred, y_true, thr=0.5, dim=(2,3), epsilon=0.001):
     return iou
 
 def get_loss():
-    # if CFG["loss"] == "BCE+SoftDice":
-    #     return bce_soft_dice_loss
-    # elif CFG["loss"] == "SoftDice":
-    #     return SoftDiceLoss()
-    # elif CFG["loss"] == "BCE":
-    return nn.BCELoss()
+    if CFG["loss"] == "BCE+SoftDice":
+        return bce_soft_dice_loss
+    elif CFG["loss"] == "SoftDice":
+        return SoftDiceLoss()
+    elif CFG["loss"] == "BCE":
+        return nn.BCELoss()
 
 #Optimizer
 def get_optimizer(model):

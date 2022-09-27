@@ -73,7 +73,7 @@ data_transforms = {
         ], p=1.0),
 }
 
-def prepare_train_loaders(fold):
+def prepare_train_loaders(fold, val_shuffle=False):
     
     df = pd.read_csv(TRAIN_CSV_PATH)
     train_df = df[df["fold"]!=fold].reset_index(drop=True)
@@ -86,16 +86,15 @@ def prepare_train_loaders(fold):
         num_workers=CFG["num_workers"], shuffle=True, drop_last=False)
 
     valid_loader = torch.utils.data.DataLoader(valid_dataset, batch_size=CFG["batch_size"],
-        num_workers=CFG["num_workers"], shuffle=False)
+        num_workers=CFG["num_workers"], shuffle=val_shuffle)
     
     return train_loader, valid_loader
 
-def prepare_test_loader():
+def prepare_test_loader(shuffle=False):
 
     test_df = pd.read_csv(TEST_CSV_PATH)
     test_dataset = HuBMAP_Dataset(test_df, transforms=data_transforms['valid'])
     test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=CFG["batch_size"],
-        num_workers=CFG["num_workers"], shuffle=False)
+        num_workers=CFG["num_workers"], shuffle=shuffle)
 
     return test_loader
-

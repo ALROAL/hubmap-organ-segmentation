@@ -16,13 +16,9 @@ def model_pipeline():
         learning_rate=CFG["lr"],
         scheduler=CFG["scheduler"]
     )
-    # tell wandb to get started
-    with wandb.init(project="hubmap-organ-segmentation", config=config):
-        # access all HPs through wandb.config, so logging matches execution!
-        config = wandb.config
-        model = train()
-        test_loss, test_iou = test(model)
-        wandb.log(
-            {"test_loss": test_loss,
-            "test_iou": test_iou}
-        )
+    model = train(config)
+    test_loss, test_iou = test(model)
+    wandb.log(
+        {"test_loss": test_loss,
+        "test_iou": test_iou}
+    )

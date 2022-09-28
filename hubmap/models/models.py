@@ -19,9 +19,9 @@ def load_model(model_type, path, device=CFG["device"]):
     model.eval()
     return model
 
-def save_model(model):
+def save_model(model, model_name):
     MODEL_PATH.mkdir(parents=True, exist_ok=True)
-    model_path = str(MODEL_PATH / "model.pth")
+    model_path = str(MODEL_PATH / model_name)
     torch.save(model.state_dict(), model_path)
     print(f"saved model at {model_path}")
 

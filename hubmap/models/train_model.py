@@ -164,31 +164,22 @@ def run_training(model, train_loader, val_loader, criterion, optimizer, schedule
 
     best_loss = np.inf
     for epoch in range(CFG["epochs"]):
-        print(f"Epoch {epoch}")
         train_loss = train_one_epoch(model, train_loader, criterion, optimizer, scheduler)
-        print(f"Train loss {train_loss}")
         val_loss = valid_one_epoch(model, val_loader)
-        print(f"Val loss {val_loss}")
         wandb.log(
-            {"epoch": epoch,
-            "train_loss": train_loss,
+            {"train_loss": train_loss,
             "val_loss": val_loss}
             )
-
         # deep copy the model weights
         if val_loss < best_loss:
             best_model_wts = copy.deepcopy(model.state_dict())
-            save_model(model)
 
     # load best model weights
     model.load_state_dict(best_model_wts)
-    save_model(model)
-
-    wandb.join()
 
     return model
 
-def train():
+def train(config):
 
     for fold in range(CFG["n_folds"]):
         model = build_model()
@@ -196,8 +187,12 @@ def train():
         train_loader, val_loader = prepare_train_loaders(fold)
         criterion = get_loss()
         optimizer = get_optimizer(model)
-        scheduler = get_scheduler(optimizer, train_loader)
+        scheduler = get_scheduler(optimizer)
+        wandb.init(project="hubmap-organ-segmentation", config=config, job_type='train', name=f'fold_{fold}')
         model = run_training(model, train_loader, val_loader, criterion, optimizer, scheduler)
+        model_name = f'model_fold_{fold}.pth'
+        save_model(model, model_name)
+        wandb.join()
     return model
 
 @torch.no_grad()

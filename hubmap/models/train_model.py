@@ -83,12 +83,11 @@ def get_optimizer(model):
     return optimizer
 
 #Scheduler
-def get_scheduler(optimizer, train_loader):
+def get_scheduler(optimizer):
     
-    num_steps = len(train_loader)
-    
+    T_max = int(CFG["epochs"]/3)
     if CFG["scheduler"] == 'CosineAnnealingLR':
-        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=num_steps, eta_min=1e-6)
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=T_max, eta_min=1e-6)
 
     elif CFG["scheduler"] == 'ReduceLROnPlateau':
         scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.1, patience=7, threshold=0.0001, min_lr=1e-6)

@@ -38,6 +38,11 @@ class SoftDiceLoss(nn.Module):
         
         return 1 - dice
 
+def bce_loss(y_pred, y_true):
+    loss = nn.BCELoss()(y_pred, y_true)
+    loss = {"BCE": loss}
+    return loss
+
 def dice_coef(y_pred, y_true, thr=0.5, dim=(2,3), epsilon=0.001):
     y_true = y_true.to(torch.float32)
     y_pred = (y_pred>thr).to(torch.float32)
@@ -56,8 +61,8 @@ def soft_dice_loss(y_pred, y_true, dim=(2,3), epsilon=0.001):
     return loss
 
 def bce_soft_dice_loss(y_pred, y_true):
-    dice_loss = soft_dice_loss(y_pred, y_true)
-    bce_loss = nn.BCELoss()(y_pred, y_true)
+    dice_loss = soft_dice_loss(y_pred, y_true)["SoftDice"]
+    bce_loss = bce_loss(y_pred, y_true)["BCE"]
     bce_dice_loss = (dice_loss + bce_loss)/2
     loss = {"BCE": bce_loss, "SoftDice": dice_loss, "BCE+SoftDice": bce_dice_loss}
     return loss
@@ -74,9 +79,9 @@ def get_loss():
     if CFG["loss"] == "BCE+SoftDice":
         return bce_soft_dice_loss
     elif CFG["loss"] == "SoftDice":
-        return SoftDiceLoss()
+        return soft_dice_loss
     elif CFG["loss"] == "BCE":
-        return nn.BCELoss()
+        return bce_loss
 
 #Optimizer
 def get_optimizer(model):

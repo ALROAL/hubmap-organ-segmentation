@@ -62,9 +62,9 @@ def soft_dice_loss(y_pred, y_true, dim=(2,3), epsilon=0.001):
 
 def bce_soft_dice_loss(y_pred, y_true):
     dice_loss = soft_dice_loss(y_pred, y_true)["SoftDice"]
-    bce_loss = bce_loss(y_pred, y_true)["BCE"]
+    bce_l = bce_loss(y_pred, y_true)["BCE"]
     bce_dice_loss = (dice_loss + bce_loss)/2
-    loss = {"BCE": bce_loss, "SoftDice": dice_loss, "BCE+SoftDice": bce_dice_loss}
+    loss = {"BCE": bce_l, "SoftDice": dice_loss, "BCE+SoftDice": bce_dice_loss}
     return loss
 
 def iou_coef(y_pred, y_true, thr=0.5, dim=(2,3), epsilon=0.001):

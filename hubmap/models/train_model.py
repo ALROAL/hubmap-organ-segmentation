@@ -63,7 +63,7 @@ def soft_dice_loss(y_pred, y_true, dim=(2,3), epsilon=0.001):
 def bce_soft_dice_loss(y_pred, y_true):
     dice_loss = soft_dice_loss(y_pred, y_true)["SoftDice"]
     bce_l = bce_loss(y_pred, y_true)["BCE"]
-    bce_dice_loss = (dice_loss + bce_loss)/2
+    bce_dice_loss = (dice_loss + bce_l)/2
     loss = {"BCE": bce_l, "SoftDice": dice_loss, "BCE+SoftDice": bce_dice_loss}
     return loss
 
@@ -97,6 +97,7 @@ def get_optimizer(model):
 def get_scheduler(optimizer):
     
     T_max = int(CFG["epochs"]/3)
+
     if CFG["scheduler"] == 'CosineAnnealingLR':
         scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=T_max, eta_min=1e-6)
 

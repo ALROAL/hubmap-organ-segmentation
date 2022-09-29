@@ -51,10 +51,16 @@ def soft_dice_loss(y_pred, y_true, dim=(2,3), epsilon=0.001):
     inter = (y_true*y_pred).sum(dim=dim)
     den = y_true.sum(dim=dim) + y_pred.sum(dim=dim)
     dice = ((2*inter+epsilon)/(den+epsilon)).mean(dim=(1,0))
-    return 1-dice
+    dice_loss = 1-dice
+    loss = {"SoftDice": dice_loss}
+    return loss
 
 def bce_soft_dice_loss(y_pred, y_true):
-    return (soft_dice_loss(y_pred, y_true) + nn.BCELoss()(y_pred, y_true))/2
+    dice_loss = soft_dice_loss(y_pred, y_true)
+    bce_loss = nn.BCELoss()(y_pred, y_true)
+    bce_dice_loss = (dice_loss + bce_loss)/2
+    loss = {"BCE": bce_loss, "SoftDice": dice_loss, "BCE+SoftDice": bce_dice_loss}
+    return loss
 
 def iou_coef(y_pred, y_true, thr=0.5, dim=(2,3), epsilon=0.001):
     y_true = y_true.to(torch.float32)
@@ -102,45 +108,54 @@ def get_scheduler(optimizer):
 def train_one_epoch(model, dataloader, criterion, optimizer, scheduler):
     wandb.watch(model, log=None)
     model.train()
-    loss_sum = 0
+    losses_sum = {}
+    epoch_losses = {}
     n_samples = 0
-
+    first = True
     for images, masks in dataloader:
 
         images = images.to(CFG["device"], dtype=torch.float)
         masks  = masks.to(CFG["device"], dtype=torch.float)
 
-
         batch_size = images.size(0)
         n_samples += batch_size
         
         y_pred = model(images)
-        loss = criterion(y_pred, masks)
-        loss_sum += loss.item()*batch_size
+        losses = criterion(y_pred, masks)
 
+        if first:
+            for k, v in losses.items():
+                losses_sum[k] = v.item()*batch_size
+        else:
+            for k, v in losses.items():
+                losses_sum[k] += v.item()*batch_size
+
+        loss = losses[CFG["loss"]]
         # zero the parameter gradients
         optimizer.zero_grad()
         loss.backward()
 
         optimizer.step()
 
-
     if scheduler is not None:
         scheduler.step()
     
-    epoch_loss = loss_sum / n_samples
+    for k, v in losses_sum:
+        epoch_losses[k] = v / n_samples
     torch.cuda.empty_cache()
     
-    return epoch_loss
+    return epoch_losses
 
 @torch.no_grad()
 def valid_one_epoch(model, dataloader):
     model.eval()
-    
-    loss_sum = 0
+
+    losses_sum = {}
+    epoch_losses = {}
     n_samples = 0
+
     criterion = get_loss()
-    
+    first = True
     for images, masks in dataloader:        
         images = images.to(CFG["device"], dtype=torch.float)
         masks  = masks.to(CFG["device"], dtype=torch.float)
@@ -149,13 +164,19 @@ def valid_one_epoch(model, dataloader):
         n_samples += batch_size
         
         y_pred = model(images)
-        loss = criterion(y_pred, masks)
-        loss_sum += loss.item()*batch_size
+        losses = criterion(y_pred, masks)
+        if first:
+            for k, v in losses.items():
+                losses_sum[k] = v.item()*batch_size
+        else:
+            for k, v in losses.items():
+                losses_sum[k] += v.item()*batch_size
         
-    epoch_loss = loss_sum / n_samples
+    for k, v in losses_sum:
+        epoch_losses[k] = v / n_samples
     torch.cuda.empty_cache()
     
-    return epoch_loss
+    return epoch_losses
 
 
 def run_training(model, train_loader, val_loader, criterion, optimizer, scheduler):
@@ -164,12 +185,17 @@ def run_training(model, train_loader, val_loader, criterion, optimizer, schedule
 
     best_loss = np.inf
     for epoch in range(CFG["epochs"]):
+
         train_loss = train_one_epoch(model, train_loader, criterion, optimizer, scheduler)
         val_loss = valid_one_epoch(model, val_loader)
-        wandb.log(
-            {"train_loss": train_loss,
-            "val_loss": val_loss}
-            )
+
+        logging_dict = {}
+        for k, v in train_loss.items():
+            logging_dict[f"train_{k}"] = v
+        for k, v in val_loss.items():
+            logging_dict[f"val_{k}"] = v
+
+        wandb.log(logging_dict)
         # deep copy the model weights
         if val_loss < best_loss:
             best_model_wts = copy.deepcopy(model.state_dict())
@@ -182,17 +208,22 @@ def run_training(model, train_loader, val_loader, criterion, optimizer, schedule
 def train(config):
 
     for fold in range(CFG["n_folds"]):
+
         model = build_model()
         model.apply(initialize_weights)
         train_loader, val_loader = prepare_train_loaders(fold)
         criterion = get_loss()
         optimizer = get_optimizer(model)
         scheduler = get_scheduler(optimizer)
-        wandb.init(project="hubmap-organ-segmentation", config=config, job_type='train', name=f'fold_{fold}')
+
+        wandb.init(project="hubmap-organ-segmentation", group=CFG["model"], config=config, job_type='train', name=f'fold_{fold}')
+
         model = run_training(model, train_loader, val_loader, criterion, optimizer, scheduler)
         model_name = f'model_fold_{fold}.pth'
         save_model(model, model_name)
+
         wandb.join()
+
     return model
 
 @torch.no_grad()

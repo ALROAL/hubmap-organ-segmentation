@@ -222,7 +222,7 @@ def train(config):
         optimizer = get_optimizer(model)
         scheduler = get_scheduler(optimizer)
 
-        wandb.init(project="hubmap-organ-segmentation", group=CFG["model"], config=config, job_type='train', name=f'fold_{fold}')
+        wandb.init(project="hubmap-organ-segmentation", group="UNet", config=config, job_type='train', name=f'fold_{fold}')
 
         model = run_training(model, train_loader, val_loader, criterion, optimizer, scheduler)
         model_name = f'model_fold_{fold}.pth'

@@ -140,7 +140,7 @@ def train_one_epoch(model, dataloader, criterion, optimizer, scheduler):
     if scheduler is not None:
         scheduler.step()
     
-    for k, v in losses_sum:
+    for k, v in losses_sum.items():
         epoch_losses[k] = v / n_samples
     torch.cuda.empty_cache()
     

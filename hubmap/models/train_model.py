@@ -144,7 +144,7 @@ def train_one_epoch(model, dataloader, criterion, optimizer, scheduler):
         optimizer.step()
 
     if scheduler is not None:
-        scheduler.step()
+        scheduler.step(loss)
     
     for k, v in losses_sum.items():
         epoch_losses[k] = v / n_samples

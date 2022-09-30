@@ -202,7 +202,7 @@ def run_training(model, train_loader, val_loader, criterion, optimizer, schedule
         for k, v in val_loss.items():
             logging_dict[f"val_{k}"] = v
 
-        logging_dict["lr"] = scheduler.get_lr()
+        logging_dict["lr"] = scheduler.get_lr()[0]
 
         wandb.log(logging_dict)
         # deep copy the model weights

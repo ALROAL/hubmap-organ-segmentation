@@ -130,6 +130,7 @@ def train_one_epoch(model, dataloader, criterion, optimizer, scheduler):
         losses = criterion(y_pred, masks)
 
         if first:
+            first = False
             for k, v in losses.items():
                 losses_sum[k] = v.item()*batch_size
         else:
@@ -171,6 +172,7 @@ def valid_one_epoch(model, dataloader):
         y_pred = model(images)
         losses = criterion(y_pred, masks)
         if first:
+            first = False
             for k, v in losses.items():
                 losses_sum[k] = v.item()*batch_size
         else:
@@ -199,6 +201,8 @@ def run_training(model, train_loader, val_loader, criterion, optimizer, schedule
             logging_dict[f"train_{k}"] = v
         for k, v in val_loss.items():
             logging_dict[f"val_{k}"] = v
+
+        logging_dict["lr"] = scheduler.get_lr()
 
         wandb.log(logging_dict)
         # deep copy the model weights

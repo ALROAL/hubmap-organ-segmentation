@@ -136,15 +136,14 @@ def train_one_epoch(model, dataloader, criterion, optimizer, scheduler):
             for k, v in losses.items():
                 losses_sum[k] += v.item()*batch_size
 
-        loss = losses[CFG["loss"]]
         # zero the parameter gradients
         optimizer.zero_grad()
-        loss.backward()
+        losses[CFG["loss"]].backward()
 
         optimizer.step()
 
     if scheduler is not None:
-        scheduler.step(loss)
+        scheduler.step()
     
     for k, v in losses_sum.items():
         epoch_losses[k] = v / n_samples
@@ -178,7 +177,7 @@ def valid_one_epoch(model, dataloader):
             for k, v in losses.items():
                 losses_sum[k] += v.item()*batch_size
         
-    for k, v in losses_sum:
+    for k, v in losses_sum.items():
         epoch_losses[k] = v / n_samples
     torch.cuda.empty_cache()
     

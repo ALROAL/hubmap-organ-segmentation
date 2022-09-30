@@ -96,7 +96,7 @@ def get_optimizer(model):
 #Scheduler
 def get_scheduler(optimizer):
     
-    T_max = int(CFG["epochs"]/3)
+    T_max = int(CFG["epochs"]/6)
 
     if CFG["scheduler"] == 'CosineAnnealingLR':
         scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=T_max, eta_min=5e-6)

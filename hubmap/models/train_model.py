@@ -202,7 +202,7 @@ def run_training(model, train_loader, val_loader, criterion, optimizer, schedule
 
         wandb.log(logging_dict)
         # deep copy the model weights
-        if val_loss < best_loss:
+        if val_loss[CFG["loss"]] < best_loss:
             best_model_wts = copy.deepcopy(model.state_dict())
 
     # load best model weights

@@ -1,7 +1,7 @@
 from ..PATHS import CONFIG_JSON_PATH
 import json
 with open(CONFIG_JSON_PATH) as f:
-  CFG = json.load(f)
+    CFG = json.load(f)
 from hubmap.data.create_dataloaders import prepare_test_loader, prepare_train_loaders
 from hubmap.models.models import load_model
 import torch

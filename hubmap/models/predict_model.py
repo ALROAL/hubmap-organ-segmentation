@@ -1,7 +1,7 @@
 from ..PATHS import CONFIG_JSON_PATH
 import json
 with open(CONFIG_JSON_PATH) as f:
-  CFG = json.load(f)
+    CFG = json.load(f)
 from .models import load_model
 
 def segment_images(model_type, path, images, device=CFG["device"]):

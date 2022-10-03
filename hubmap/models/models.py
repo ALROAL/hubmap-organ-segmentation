@@ -1,7 +1,7 @@
 from ..PATHS import CONFIG_JSON_PATH, MODEL_PATH
 import json
 with open(CONFIG_JSON_PATH) as f:
-  CFG = json.load(f)
+    CFG = json.load(f)
 import torch, torchvision
 import torch.nn as nn
 import torch.nn.functional as F

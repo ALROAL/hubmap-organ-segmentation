@@ -3,18 +3,16 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch
 import copy
-
 from ..PATHS import CONFIG_JSON_PATH
 import json
 with open(CONFIG_JSON_PATH) as f:
-  CFG = json.load(f)
+    CFG = json.load(f)
 from .models import build_model, save_model
 from ..data.create_dataloaders import prepare_train_loaders, prepare_test_loader
 import wandb
 
 #Weight initialization
 def initialize_weights(model):
-
     for m in model.modules():
         if isinstance(m, (nn.Conv2d, nn.ConvTranspose2d, nn.BatchNorm2d)):
             nn.init.xavier_normal_(m.weight.data)

@@ -56,22 +56,27 @@ def iou_coef(y_pred, y_true, thr=0.5, dim=(2,3), epsilon=0.001):
     iou = ((inter+epsilon)/(union+epsilon)).mean(dim=(1,0))
     return iou
 
-JaccardLoss = smp.losses.JaccardLoss(mode='binary')
-DiceLoss    = smp.losses.DiceLoss(mode='binary')
-BCELoss     = nn.BCELoss()
-LovaszLoss  = smp.losses.LovaszLoss(mode='binary', per_image=False)
-TverskyLoss = smp.losses.TverskyLoss(mode='binary', log_loss=False)
+def JaccardLoss(y_pred, y_true):
+    loss = smp.losses.JaccardLoss(mode='binary')(y_pred, y_true)
+    return {"Jaccard": loss}
+def DiceLoss(y_pred, y_true):
+    loss = smp.losses.DiceLoss(mode='binary')(y_pred, y_true)
+    return {"Dice": loss}
+def BCELoss(y_pred, y_true):
+    loss = nn.BCELoss()(y_pred, y_true)
+    return {"BCE": loss}
+def LovaszLoss(y_pred, y_true):
+    loss = smp.losses.LovaszLoss(mode='binary', per_image=False)(y_pred, y_true)
+    return {"Lovasz": loss}
+def TverskyLoss(y_pred, y_true):
+    loss = smp.losses.TverskyLoss(mode='binary', log_loss=False)(y_pred, y_true)
+    return {"Tversky": loss}
 
-class BCEDice(_Loss):
-    def __init__(self):
-        super(BCEDice, self).__init__()
-        self.BCE_loss = BCELoss
-        self.Dice_loss = DiceLoss
-
-    def forward(self, input, target):
-        return (self.BCE_loss(input, target)+self.Dice_loss(input, target))/2.
-
-BCEDiceLoss = BCEDice()
+def BCEDiceLoss(y_pred, y_true):
+    bce_loss = nn.BCELoss()(y_pred, y_true)
+    dice_loss = smp.losses.DiceLoss(mode='binary')(y_pred, y_true)
+    loss = (bce_loss + dice_loss)/2.
+    return {"BCE": bce_loss, "Dice": dice_loss, "BCEDice": loss}
 
 def get_loss():
 

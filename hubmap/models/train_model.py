@@ -100,7 +100,7 @@ def get_scheduler(optimizer):
         scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=T_max, eta_min=5e-6)
 
     elif CFG["scheduler"] == 'ReduceLROnPlateau':
-        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.1, patience=7, threshold=0.0001, min_lr=1e-6)
+        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.1, patience=10, threshold=0.001, min_lr=1e-6)
 
     elif CFG["scheduler"] == 'ExponentialLR':
         scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.85)
@@ -142,7 +142,7 @@ def train_one_epoch(model, dataloader, criterion, optimizer, scheduler):
         optimizer.step()
 
     if scheduler is not None:
-        scheduler.step()
+        scheduler.step(losses[CFG["loss"]])
     
     for k, v in losses_sum.items():
         epoch_losses[k] = v / n_samples

@@ -119,7 +119,7 @@ def get_scheduler(optimizer):
 
 
 #Train functions
-def train_one_epoch(model, dataloader, criterion, optimizer, scheduler):
+def train_one_epoch(model, dataloader, criterion, optimizer):
     wandb.watch(model, log=None)
     model.train()
     losses_sum = {}
@@ -151,9 +151,6 @@ def train_one_epoch(model, dataloader, criterion, optimizer, scheduler):
 
         optimizer.step()
 
-    if scheduler is not None:
-        scheduler.step(losses[CFG["loss"]])
-    
     for k, v in losses_sum.items():
         epoch_losses[k] = v / n_samples
     torch.cuda.empty_cache()
@@ -201,7 +198,7 @@ def run_training(model, train_loader, val_loader, criterion, optimizer, schedule
     best_loss = np.inf
     for epoch in range(CFG["epochs"]):
 
-        train_loss = train_one_epoch(model, train_loader, criterion, optimizer, scheduler)
+        train_loss = train_one_epoch(model, train_loader, criterion, optimizer)
         val_loss = valid_one_epoch(model, val_loader)
 
         logging_dict = {}
@@ -210,12 +207,16 @@ def run_training(model, train_loader, val_loader, criterion, optimizer, schedule
         for k, v in val_loss.items():
             logging_dict[f"val_{k}"] = v
 
-        logging_dict["lr"] = scheduler.get_lr()[0]
+        logging_dict["lr"] = optimizer.param_groups[0]['lr']
+
+        if scheduler is not None:
+            scheduler.step(train_loss[CFG["loss"]])
 
         wandb.log(logging_dict)
         # deep copy the model weights
         if val_loss[CFG["loss"]] < best_loss:
             best_model_wts = copy.deepcopy(model.state_dict())
+            best_loss = val_loss[CFG["loss"]]
 
     # load best model weights
     model.load_state_dict(best_model_wts)

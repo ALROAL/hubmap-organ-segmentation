@@ -1,7 +1,7 @@
 HuBMAP
 ==============================
 
-HuBMAP + HPA - Hacking the Human Body Kaggle competition. The goal of this competition is to identify the locations of each functional tissue unit (FTU) in biopsy slides from several different organs. The underlying data includes imagery from different sources prepared with different protocols at a variety of resolutions, reflecting typical challenges for working with medical data.
+HuBMAP + HPA - Hacking the Human Body Kaggle competition (https://www.kaggle.com/competitions/hubmap-organ-segmentation). The goal of this competition is to identify the locations of each functional tissue unit (FTU) in biopsy slides from several different organs. The underlying data includes imagery from different sources prepared with different protocols at a variety of resolutions, reflecting typical challenges for working with medical data. 
 
 Project Organization
 ------------

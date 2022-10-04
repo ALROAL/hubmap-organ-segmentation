@@ -1,6 +1,6 @@
 import numpy as np
 import torch.nn as nn
-import torch.nn.functional as F
+from torch.nn.modules.loss import _Loss
 import torch
 import copy
 import segmentation_models_pytorch as smp
@@ -62,7 +62,7 @@ BCELoss     = nn.BCELoss()
 LovaszLoss  = smp.losses.LovaszLoss(mode='binary', per_image=False)
 TverskyLoss = smp.losses.TverskyLoss(mode='binary', log_loss=False)
 
-class BCEDice():
+class BCEDice(_Loss):
     def __init__(self):
         self.BCE_loss = nn.BCELoss()
         self.Dice_loss = smp.losses.DiceLoss(mode='binary')

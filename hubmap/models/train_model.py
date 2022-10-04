@@ -64,8 +64,8 @@ TverskyLoss = smp.losses.TverskyLoss(mode='binary', log_loss=False)
 
 class BCEDice(_Loss):
     def __init__(self):
-        self.BCE_loss = nn.BCELoss()
-        self.Dice_loss = smp.losses.DiceLoss(mode='binary')
+        self.BCE_loss = BCELoss
+        self.Dice_loss = DiceLoss
 
     def forward(self, input, target):
         return (self.BCE_loss(input, target)+self.Dice_loss(input, target))/2.

@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch
 import copy
+import segmentation_models_pytorch as smp
 from ..PATHS import CONFIG_JSON_PATH
 import json
 with open(CONFIG_JSON_PATH) as f:
@@ -18,24 +19,6 @@ def initialize_weights(model):
             nn.init.xavier_normal_(m.weight.data)
 
 #Loss function
-class SoftDiceLoss(nn.Module):
-    def __init__(self, weight=None, size_average=True):
-        super(SoftDiceLoss, self).__init__()
-
-    def forward(self, inputs, targets, smooth=1):
-        
-        #comment out if your model contains a sigmoid or equivalent activation layer
-        #inputs = F.sigmoid(inputs)       
-        
-        #flatten label and prediction tensors
-        inputs = inputs.view(-1)
-        targets = targets.view(-1)
-        
-        intersection = (inputs * targets).sum()                            
-        dice = (2.*intersection + smooth)/(inputs.sum() + targets.sum() + smooth)  
-        
-        return 1 - dice
-
 def bce_loss(y_pred, y_true):
     loss = nn.BCELoss()(y_pred, y_true)
     loss = {"BCE": loss}
@@ -73,13 +56,34 @@ def iou_coef(y_pred, y_true, thr=0.5, dim=(2,3), epsilon=0.001):
     iou = ((inter+epsilon)/(union+epsilon)).mean(dim=(1,0))
     return iou
 
+JaccardLoss = smp.losses.JaccardLoss(mode='binary')
+DiceLoss    = smp.losses.DiceLoss(mode='binary')
+BCELoss     = nn.BCELoss()
+LovaszLoss  = smp.losses.LovaszLoss(mode='binary', per_image=False)
+TverskyLoss = smp.losses.TverskyLoss(mode='binary', log_loss=False)
+
+class BCEDice():
+    def __init__(self):
+        self.BCE_loss = nn.BCELoss()
+        self.Dice_loss = smp.losses.DiceLoss(mode='binary')
+
+    def forward(self, input, target):
+        return (self.BCE_loss(input, target)+self.Dice_loss(input, target))/2.
+
+BCEDiceLoss = BCEDice()
+
 def get_loss():
-    if CFG["loss"] == "BCE+SoftDice":
-        return bce_soft_dice_loss
-    elif CFG["loss"] == "SoftDice":
-        return soft_dice_loss
-    elif CFG["loss"] == "BCE":
-        return bce_loss
+
+    losses = {
+        "Dice": DiceLoss,
+        "Jaccard": JaccardLoss,
+        "BCE": BCELoss,
+        "Lovasz": LovaszLoss,
+        "Tversky": TverskyLoss,
+        "BCEDice": BCEDiceLoss
+    }
+
+    return losses[CFG["loss"]]
 
 #Optimizer
 def get_optimizer(model):

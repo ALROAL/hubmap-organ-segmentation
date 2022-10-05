@@ -1,6 +1,5 @@
 import numpy as np
 import torch.nn as nn
-from torch.nn.modules.loss import _Loss
 import torch
 import copy
 import segmentation_models_pytorch as smp

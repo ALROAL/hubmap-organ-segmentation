@@ -5,12 +5,22 @@ with open(CONFIG_JSON_PATH) as f:
 import torch, torchvision
 import torch.nn as nn
 import torch.nn.functional as F
-import wandb
+import segmentation_models_pytorch as smp
 
 def build_model(model_type=CFG["model"], device=CFG["device"]):
     if model_type == "UNet":
         model = UNet()
         model.to(device)
+    if model_type == "BackboneUnet":
+        model = smp.Unet(
+        encoder_name="efficientnet-b3",      
+        encoder_weights="imagenet",     
+        in_channels=3,                  
+        classes=1,
+        activation="sigmoid",
+    )
+        model.to(device)
+
     return model
 
 def load_model(model_type, path, device=CFG["device"]):

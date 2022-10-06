@@ -73,7 +73,7 @@ def TverskyLoss(y_pred, y_true):
     return {"Tversky": loss}
 
 def BCEDiceLoss(y_pred, y_true):
-    bce_loss = nn.BCELoss()(y_pred, y_true)
+    bce_loss = nn.BCEWithLogitsLoss()(y_pred, y_true)
     dice_loss = smp.losses.DiceLoss(mode='binary')(y_pred, y_true)
     loss = (bce_loss + dice_loss)/2.
     return {"BCE": bce_loss, "Dice": dice_loss, "BCEDice": loss}

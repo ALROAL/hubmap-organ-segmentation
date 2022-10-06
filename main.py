@@ -113,6 +113,12 @@ if __name__ == "__main__":
         default=CFG["scheduler"]
     )
     parser.add_argument(
+        "--n_accumulate",
+        type=int,
+        help="Number of batches to accumulate for gradients",
+        default=CFG["n_accumulate"]
+    )
+    parser.add_argument(
         "--device",
         type=str,
         help="Device (CUDA or cpu)",

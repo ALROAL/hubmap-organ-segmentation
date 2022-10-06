@@ -17,6 +17,7 @@ CFG = {
     "lr": 2e-4,
     "weight_decay": 1e-6,
     "scheduler": 'ReduceLROnPlateau', #['CosineAnnealingLR', 'ReduceLROnPlateau', 'ExponentialLR']
+    "n_accumulate": 1, #number of batches to accumulate
     "device": "cuda:0" if torch.cuda.is_available() else "cpu",
     "num_workers": os.cpu_count()
 }

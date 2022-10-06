@@ -1,6 +1,7 @@
 import numpy as np
 import torch.nn as nn
 import torch
+from torch.cuda import amp
 import copy
 import segmentation_models_pytorch as smp
 from ..PATHS import CONFIG_JSON_PATH
@@ -119,36 +120,42 @@ def get_scheduler(optimizer):
 
 #Train functions
 def train_one_epoch(model, dataloader, criterion, optimizer):
-    wandb.watch(model, log=None)
+    
     model.train()
+    scaler = amp.GradScaler()
+
     losses_sum = {}
     epoch_losses = {}
     n_samples = 0
-    first = True
-    for images, masks in dataloader:
+
+    for step, (images, masks) in enumerate(dataloader):
 
         images = images.to(CFG["device"], dtype=torch.float)
         masks  = masks.to(CFG["device"], dtype=torch.float)
 
         batch_size = images.size(0)
         n_samples += batch_size
-        
-        y_pred = model(images)
-        losses = criterion(y_pred, masks)
 
-        if first:
-            first = False
+        with amp.autocast(enabled=True):
+            y_pred = model(images)
+            losses = criterion(y_pred, masks)
+            loss = losses[CFG["loss"]] / CFG["n_accumulate"]
+
+        scaler.scale(loss).backward()
+
+        if (step + 1) % CFG["n_accumulate"] == 0:
+            scaler.step(optimizer)
+            scaler.update()
+
+            # zero the parameter gradients
+            optimizer.zero_grad()
+
+        if step==0:
             for k, v in losses.items():
                 losses_sum[k] = v.item()*batch_size
         else:
             for k, v in losses.items():
                 losses_sum[k] += v.item()*batch_size
-
-        # zero the parameter gradients
-        optimizer.zero_grad()
-        losses[CFG["loss"]].backward()
-
-        optimizer.step()
 
     for k, v in losses_sum.items():
         epoch_losses[k] = v / n_samples
@@ -233,7 +240,7 @@ def train(config):
         optimizer = get_optimizer(model)
         scheduler = get_scheduler(optimizer)
 
-        wandb.init(project="hubmap-organ-segmentation", group="UNet", config=config, job_type='train', name=f'fold_{fold}')
+        wandb.init(project="hubmap-organ-segmentation", group=CFG["model"], config=config, job_type='train', name=f'fold_{fold}')
 
         model = run_training(model, train_loader, val_loader, criterion, optimizer, scheduler)
         model_name = f'model_fold_{fold}.pth'

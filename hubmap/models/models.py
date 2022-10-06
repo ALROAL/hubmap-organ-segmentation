@@ -44,7 +44,8 @@ class ConvBlock(nn.Module):
         self.conv_block = nn.Sequential(
             nn.Conv2d(in_ch, out_ch, 3, padding="same"),
             nn.ReLU(),
-            nn.Conv2d(out_ch, out_ch, 3, padding="same")
+            nn.Conv2d(out_ch, out_ch, 3, padding="same"),
+            nn.ReLU()
         )
 
     def forward(self, x):

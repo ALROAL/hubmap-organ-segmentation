@@ -8,9 +8,10 @@ import torch.nn.functional as F
 import segmentation_models_pytorch as smp
 
 def build_model(model_type=CFG["model"], device=CFG["device"]):
+
     if model_type == "UNet":
         model = UNet()
-        model.to(device)
+
     if model_type == "BackboneUnet":
         model = smp.Unet(
         encoder_name="efficientnet-b3",      
@@ -19,7 +20,8 @@ def build_model(model_type=CFG["model"], device=CFG["device"]):
         classes=1,
         activation="sigmoid",
     )
-        model.to(device)
+        
+    model.to(device)
 
     return model
 

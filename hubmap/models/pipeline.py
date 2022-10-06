@@ -6,6 +6,7 @@ with open(CONFIG_JSON_PATH) as f:
     CFG = json.load(f)
 
 def model_pipeline():
+
     wandb.login()
     config = dict(
         model = CFG["model"],

@@ -227,7 +227,7 @@ def train(config):
     for fold in range(CFG["n_folds"]):
 
         model = build_model()
-        model.apply(initialize_weights)
+        #model.apply(initialize_weights)
         train_loader, val_loader = prepare_train_loaders(fold)
         criterion = get_loss()
         optimizer = get_optimizer(model)

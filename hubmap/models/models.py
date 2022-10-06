@@ -102,7 +102,7 @@ class UNet(nn.Module):
         encoder_features = self.encoder(x)
         out = self.decoder(encoder_features[::-1][0], encoder_features[::-1][1:])
         out = self.head(out)
-        out = nn.Sigmoid()(out)
+        #out = nn.Sigmoid()(out)
         if self.upscale:
             out = F.interpolate(out, (CFG["img_size"], CFG["img_size"]))
         return out

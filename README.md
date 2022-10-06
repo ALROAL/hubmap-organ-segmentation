@@ -1,4 +1,4 @@
-U-Net: Semantic segmentation with PyTorch for Kaggle's competition: HuBMAP + HPA - Hacking the Human Body . 
+U-Net: Semantic segmentation with PyTorch for Kaggle's competition: HuBMAP + HPA - Hacking the Human Body
 ==============================
 
 The goal of this competition is to identify the locations of each functional tissue unit (FTU) in biopsy slides from several different organs. The underlying data includes imagery from different sources prepared with different protocols at a variety of resolutions, reflecting typical challenges for working with medical data.
@@ -27,6 +27,7 @@ The project implements the UNet architecture from [U-Net: Convolutional Networks
 ## Usage
 
 ```console
+> python main.py -h
 usage: main.py [-h] [--data_path DATA_PATH] [--num_classes NUM_CLASSES] [--img_size IMG_SIZE] [--model_path MODEL_PATH] [--seed SEED] [--test_size TEST_SIZE] [--n_folds N_FOLDS] [--model MODEL] [--epochs EPOCHS]
                [--batch_size BATCH_SIZE] [--loss LOSS] [--optimizer OPTIMIZER] [--lr LR] [--weight_decay WEIGHT_DECAY] [--scheduler SCHEDULER] [--n_accumulate N_ACCUMULATE] [--device DEVICE]
                [--num-workers NUM_WORKERS]
@@ -68,6 +69,3 @@ options:
 ## Weights & Biases
 The training progress can be visualized in real-time using [Weights & Biases](https://wandb.ai/). Training and validation loss curves are logged to the platform.
 When launching a training, a link will be printed in the console. Click on it to go to your dashboard. If you have an existing W&B account, you can link it by setting the `WANDB_API_KEY` environment variable. If not, it will create an anonymous run which is automatically deleted after 7 days.
-
-
-<p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>

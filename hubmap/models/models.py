@@ -18,7 +18,7 @@ def build_model(model_type=CFG["model"], device=CFG["device"]):
         encoder_weights="imagenet",     
         in_channels=3,                  
         classes=1,
-        activation="sigmoid",
+        activation=None,
     )
         
     model.to(device)

@@ -4,7 +4,9 @@ with open(CONFIG_JSON_PATH) as f:
     CFG = json.load(f)
 from hubmap.data.create_dataloaders import prepare_test_loader, prepare_train_loaders
 from hubmap.models.models import load_model
+from hubmap.models.predict_model import segment_images
 import torch
+import torch.nn as nn
 import matplotlib.pyplot as plt
 
 
@@ -29,7 +31,8 @@ def visualize_random_segmentations(model_type, path, dataset="val", val_fold=0, 
         images = images.to(device, dtype=torch.float)
         masks  = masks.to(device, dtype=torch.float)
 
-        segmented_images = model(images)
+        segmented_images = nn.Sigmoid(model)
+
         segmented_images = (segmented_images>0.5).to(dtype=torch.float)
 
         all_images.append(images)

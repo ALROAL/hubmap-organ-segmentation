@@ -12,7 +12,7 @@ def build_model(model_type=CFG["model"], device=CFG["device"]):
     if model_type == "UNet":
         model = UNet()
 
-    if model_type == "BackboneUnet":
+    elif model_type == "BackboneUnet":
         model = smp.Unet(
         encoder_name="efficientnet-b3",      
         encoder_weights="imagenet",     

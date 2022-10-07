@@ -180,7 +180,7 @@ def _windowed_subdivs(padded_img, window_size, subdivisions, nb_classes, pred_fu
 
     for i in range(0, padx_len-window_size+1, step):
         subdivs.append([])
-        for j in range(0, pady_len-window_size+1, step):
+        for j in range(0, padx_len-window_size+1, step):
             patch = padded_img[i:i+window_size, j:j+window_size, :]
             subdivs[-1].append(patch)
 
@@ -218,7 +218,7 @@ def _recreate_from_subdivs(subdivs, window_size, subdivisions, padded_out_shape)
     a = 0
     for i in range(0, padx_len-window_size+1, step):
         b = 0
-        for j in range(0, pady_len-window_size+1, step):
+        for j in range(0, padx_len-window_size+1, step):
             windowed_patch = subdivs[a, b]
             y[i:i+window_size, j:j+window_size] = y[i:i+window_size, j:j+window_size] + windowed_patch
             b += 1
@@ -276,68 +276,6 @@ def predict_img_with_smooth_windowing(input_img, window_size, subdivisions, nb_c
         plt.imshow(prd)
         plt.title("Smoothly Merged Patches that were Tiled Tighter")
         plt.show()
-    return prd
-
-
-def cheap_tiling_prediction(img, window_size, nb_classes, pred_func):
-    """
-    Does predictions on an image without tiling.
-    """
-    original_shape = img.shape
-    full_border = img.shape[0] + (window_size - (img.shape[0] % window_size))
-    prd = np.zeros((full_border, full_border, nb_classes))
-    tmp = np.zeros((full_border, full_border, original_shape[-1]))
-    tmp[:original_shape[0], :original_shape[1], :] = img
-    img = tmp
-    print(img.shape, tmp.shape, prd.shape)
-    for i in tqdm(range(0, prd.shape[0], window_size)):
-        for j in range(0, prd.shape[0], window_size):
-            im = img[i:i+window_size, j:j+window_size]
-            prd[i:i+window_size, j:j+window_size] = pred_func([im])
-    prd = prd[:original_shape[0], :original_shape[1]]
-    if PLOT_PROGRESS:
-        plt.imshow(prd)
-        plt.title("Cheaply Merged Patches")
-        plt.show()
-    return prd
-
-
-def get_dummy_img(xy_size=128, nb_channels=3):
-    """
-    Create a random image with different luminosity in the corners.
-    Returns an array of shape (xy_size, xy_size, nb_channels).
-    """
-    x = np.random.random((xy_size, xy_size, nb_channels))
-    x = x + np.ones((xy_size, xy_size, 1))
-    lin = np.expand_dims(
-        np.expand_dims(
-            np.linspace(0, 1, xy_size),
-            nb_channels),
-        nb_channels)
-    x = x * lin
-    x = x * lin.transpose(1, 0, 2)
-    x = x + x[::-1, ::-1, :]
-    x = x - np.min(x)
-    x = x / np.max(x) / 2
-    gc.collect()
-    if PLOT_PROGRESS:
-        plt.imshow(x)
-        plt.title("Random image for a test")
-        plt.show()
-    return x
-
-
-def round_predictions(prd, nb_channels_out, thresholds):
-    """
-    From a threshold list `thresholds` containing one threshold per output
-    channel for comparison, the predictions are converted to a binary mask.
-    """
-    assert (nb_channels_out == len(thresholds))
-    prd = np.array(prd)
-    for i in range(nb_channels_out):
-        # Per-pixel and per-channel comparison on a threshold to
-        # binarize prediction masks:
-        prd[:, :, i] = prd[:, :, i] > thresholds[i]
     return prd
 
 def predict_with_smooth_windowing(model_type, path, images, window_size=256, subdivisions=2, nb_classes=1, device=CFG["device"]):

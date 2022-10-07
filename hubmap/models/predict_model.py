@@ -284,7 +284,7 @@ def predict_with_smooth_windowing(model_type, path, images, window_size=256, sub
 
     segmented_images = []
     for input_img in images:
-        seg_img = predict_img_with_smooth_windowing(input_img, window_size, subdivisions, nb_classes, pred_func = (lambda img_batch_subdiv: model((img_batch_subdiv))) )
+        seg_img = predict_img_with_smooth_windowing(input_img, window_size, subdivisions, nb_classes, pred_func = (lambda img_batch_subdiv: model((torch.tensor(img_batch_subdiv)))))
         segmented_images.append(seg_img)
     
     segmented_images = np.array(segment_images)

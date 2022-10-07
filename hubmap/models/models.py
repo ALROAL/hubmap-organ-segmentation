@@ -7,10 +7,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 import segmentation_models_pytorch as smp
 
-def build_model(model_type=CFG["model"], device=CFG["device"]):
+def build_model(model_type=CFG["model"], inference=False, device=CFG["device"]):
 
     if model_type == "UNet":
-        model = UNet()
+        model = UNet(inference=inference)
 
     elif model_type == "BackboneUnet":
         model = smp.Unet(

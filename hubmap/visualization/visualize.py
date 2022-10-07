@@ -36,7 +36,7 @@ def visualize_random_segmentations(model_type, path, dataset="val", val_fold=0, 
         all_masks.append(masks)
     
     all_images = torch.cat(all_images[:n]).permute(0,2,3,1).cpu().detach()
-    all_segmented_images = torch.cat(all_segmented_images[:n]).permute(0,2,3,1).cpu().detach()
+    all_segmented_images = torch.cat(all_segmented_images[:n]).cpu().detach()
     all_masks = torch.cat(all_masks[:n]).permute(0,2,3,1).cpu().detach()
 
     f, axes = plt.subplots(n, 3, figsize=(15, 15))

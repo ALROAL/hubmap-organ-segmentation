@@ -29,14 +29,6 @@ from tqdm import tqdm
 import gc
 
 
-if __name__ == '__main__':
-    import matplotlib.pyplot as plt
-    PLOT_PROGRESS = True
-    # See end of file for the rest of the __main__.
-else:
-    PLOT_PROGRESS = False
-
-
 def _spline_window(window_size, power=2):
     """
     Squared spline (power=2) window function:
@@ -71,12 +63,6 @@ def _window_2D(window_size, power=2):
         wind = _spline_window(window_size, power)
         wind = np.expand_dims(np.expand_dims(wind, 1), 1)
         wind = wind * wind.transpose(1, 0, 2)
-        if PLOT_PROGRESS:
-            # For demo purpose, let's look once at the window:
-            plt.imshow(wind[:, :, 0], cmap="viridis")
-            plt.title("2D Windowing Function for a Smooth Blending of "
-                      "Overlapping Patches")
-            plt.show()
         cached_2d_windows[key] = wind
     return wind
 
@@ -187,18 +173,20 @@ def _windowed_subdivs(padded_img, window_size, subdivisions, nb_classes, pred_fu
     # Here, `gc.collect()` clears RAM between operations.
     # It should run faster if they are removed, if enough memory is available.
     gc.collect()
+    
     subdivs = np.array(subdivs)
     gc.collect()
+    
     a, b, c, d, e = subdivs.shape
+    
     subdivs = subdivs.reshape(a * b, e, c, d)
     gc.collect()
 
-    subdivs = pred_func(subdivs).cpu().detach()
-    print(subdivs.shape)
+    subdivs = pred_func(subdivs).permute(0,2,3,1).cpu().detach()
     gc.collect()
-    # subdivs = np.array([patch * WINDOW_SPLINE_2D for patch in subdivs])
-    # gc.collect()
-    # print(subdivs.shape)
+    
+    subdivs = np.stack([patch * WINDOW_SPLINE_2D for patch in subdivs])
+    gc.collect()
 
     # Such 5D array:
     subdivs = subdivs.reshape(a, b, c, d, nb_classes)
@@ -274,10 +262,6 @@ def predict_img_with_smooth_windowing(input_img, window_size, subdivisions, nb_c
 
     prd = prd[:input_img.shape[0], :input_img.shape[1], :]
 
-    if PLOT_PROGRESS:
-        plt.imshow(prd)
-        plt.title("Smoothly Merged Patches that were Tiled Tighter")
-        plt.show()
     return prd
 
 def predict_with_smooth_windowing(model_type, path, images, window_size=256, subdivisions=2, nb_classes=1, device=CFG["device"]):
@@ -293,7 +277,7 @@ def predict_with_smooth_windowing(model_type, path, images, window_size=256, sub
             pred_func = (lambda img_batch_subdiv: model((torch.tensor(img_batch_subdiv).to(device)))))
         segmented_images.append(seg_img)
     
-    segmented_images = np.array(segment_images)
+    segmented_images = np.array(segmented_images)
     segmented_images = torch.tensor(segmented_images)
 
     return segmented_images

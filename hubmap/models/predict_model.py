@@ -78,12 +78,6 @@ def _pad_img(img, window_size, subdivisions):
     ret = np.pad(img, pad_width=more_borders, mode='reflect')
     # gc.collect()
 
-    if PLOT_PROGRESS:
-        # For demo purpose, let's look once at the window:
-        plt.imshow(ret)
-        plt.title("Padded Image for Using Tiled Prediction Patches\n"
-                  "(notice the reflection effect on the padded borders)")
-        plt.show()
     return ret
 
 

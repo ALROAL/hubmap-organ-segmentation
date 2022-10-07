@@ -280,11 +280,11 @@ def predict_img_with_smooth_windowing(input_img, window_size, subdivisions, nb_c
 
 def predict_with_smooth_windowing(model_type, path, images, window_size=256, subdivisions=2, nb_classes=1, device=CFG["device"]):
 
-    pred_func = load_model(model_type, path, True, device)
+    model = load_model(model_type, path, True, device)
 
     segmented_images = []
     for input_img in images:
-        seg_img = predict_img_with_smooth_windowing(input_img, window_size, subdivisions, nb_classes, pred_func)
+        seg_img = predict_img_with_smooth_windowing(input_img, window_size, subdivisions, nb_classes, pred_func = (lambda img_batch_subdiv: model((img_batch_subdiv))) )
         segmented_images.append(seg_img)
     
     segmented_images = np.array(segment_images)

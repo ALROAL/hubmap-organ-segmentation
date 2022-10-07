@@ -194,9 +194,11 @@ def _windowed_subdivs(padded_img, window_size, subdivisions, nb_classes, pred_fu
     gc.collect()
 
     subdivs = pred_func(subdivs).cpu().detach()
+    print(subdivs.shape)
     gc.collect()
     subdivs = np.array([patch * WINDOW_SPLINE_2D for patch in subdivs])
     gc.collect()
+    print(subdivs.shape)
 
     # Such 5D array:
     subdivs = subdivs.reshape(a, b, c, d, nb_classes)

@@ -190,7 +190,7 @@ def _windowed_subdivs(padded_img, window_size, subdivisions, nb_classes, pred_fu
     subdivs = np.array(subdivs)
     gc.collect()
     a, b, c, d, e = subdivs.shape
-    subdivs = subdivs.reshape(a * b, c, d, e)
+    subdivs = subdivs.reshape(a * b, e, c, d)
     gc.collect()
 
     subdivs = pred_func(subdivs)
@@ -281,6 +281,8 @@ def predict_img_with_smooth_windowing(input_img, window_size, subdivisions, nb_c
 def predict_with_smooth_windowing(model_type, path, images, window_size=256, subdivisions=2, nb_classes=1, device=CFG["device"]):
 
     model = load_model(model_type, path, True, device)
+
+    images = images.permute(0,2,3,1)
 
     segmented_images = []
     for input_img in images:

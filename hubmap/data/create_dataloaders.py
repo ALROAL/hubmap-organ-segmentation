@@ -69,9 +69,9 @@ data_transforms = {
     "valid": A.Compose([
         A.Resize(CFG["img_size"], CFG["img_size"], interpolation=cv2.INTER_NEAREST),
         A.ToFloat(255),
-        ], p=1.0),
+        ]),
 
-    "test": A.ToFloat(255)
+    "test": A.Compose([A.ToFloat(255)])
 }
 
 def prepare_train_loaders(fold, val_shuffle=False):

@@ -70,6 +70,8 @@ data_transforms = {
         A.Resize(CFG["img_size"], CFG["img_size"], interpolation=cv2.INTER_NEAREST),
         A.ToFloat(255),
         ], p=1.0),
+
+    "test": A.ToFloat(255)
 }
 
 def prepare_train_loaders(fold, val_shuffle=False):
@@ -92,7 +94,7 @@ def prepare_train_loaders(fold, val_shuffle=False):
 def prepare_test_loader(shuffle=False):
 
     test_df = pd.read_csv(TEST_CSV_PATH)
-    test_dataset = HuBMAP_Dataset(test_df, transforms=data_transforms['valid'])
+    test_dataset = HuBMAP_Dataset(test_df, transforms=data_transforms['test'])
     test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=CFG["batch_size"],
         num_workers=CFG["num_workers"], shuffle=shuffle)
 

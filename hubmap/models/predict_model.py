@@ -193,7 +193,7 @@ def _windowed_subdivs(padded_img, window_size, subdivisions, nb_classes, pred_fu
     subdivs = subdivs.reshape(a * b, e, c, d)
     gc.collect()
 
-    subdivs = pred_func(subdivs)
+    subdivs = pred_func(subdivs).cpu()
     gc.collect()
     subdivs = np.array([patch * WINDOW_SPLINE_2D for patch in subdivs])
     gc.collect()

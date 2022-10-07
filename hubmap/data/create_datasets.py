@@ -87,7 +87,7 @@ def create_datasets():
 
     test_data.drop("rle", axis=1, inplace=True)
     test_data["mask_path"] = mask_path_list
-    test_data["image_path"] = TEST_IMAGES_PATH / (str(test_data["id"]) + ".tiff")
+    test_data["image_path"] = TEST_IMAGES_PATH / (test_data["id"].apply(str) + ".tiff")
     test_data.to_csv(TEST_CSV_PATH, index=False)
 
 

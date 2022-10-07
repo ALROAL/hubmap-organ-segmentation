@@ -25,8 +25,8 @@ def build_model(model_type=CFG["model"], device=CFG["device"]):
 
     return model
 
-def load_model(model_type, path, device=CFG["device"]):
-    model = build_model(model_type, device)
+def load_model(model_type, path, inference=False, device=CFG["device"]):
+    model = build_model(model_type, inference, device)
     model.load_state_dict(torch.load(path))
     model.eval()
     return model
@@ -96,8 +96,9 @@ class Decoder(nn.Module):
         return x
 
 class UNet(nn.Module):
-    def __init__(self, enc_chs=[3,64,128,256,512,1024], dec_chs=[1024,512,256,128,64], num_class=1, upscale=False):
+    def __init__(self, enc_chs=[3,64,128,256,512,1024], dec_chs=[1024,512,256,128,64], num_class=1, upscale=False, inference=False):
         super().__init__()
+        self.inference = inference
         self.encoder = Encoder(enc_chs)
         self.decoder = Decoder(dec_chs)
         self.head = nn.Conv2d(dec_chs[-1], num_class, 1)
@@ -107,7 +108,8 @@ class UNet(nn.Module):
         encoder_features = self.encoder(x)
         out = self.decoder(encoder_features[::-1][0], encoder_features[::-1][1:])
         out = self.head(out)
-        #out = nn.Sigmoid()(out)
+        if self.inference:
+            out = nn.Sigmoid()(out)
         if self.upscale:
             out = F.interpolate(out, (CFG["img_size"], CFG["img_size"]))
         return out

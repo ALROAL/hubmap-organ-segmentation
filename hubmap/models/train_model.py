@@ -16,7 +16,7 @@ import wandb
 #Weight initialization
 def initialize_weights(model):
     for m in model.modules():
-        if isinstance(m, (nn.Conv2d, nn.ConvTranspose2d, nn.BatchNorm2d)):
+        if isinstance(m, (nn.Conv2d, nn.ConvTranspose2d)):
             nn.init.xavier_normal_(m.weight.data)
 
 def get_loss():

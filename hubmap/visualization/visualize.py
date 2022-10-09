@@ -18,7 +18,7 @@ def visualize_random_segmentations(model_type, path, dataset="val", val_fold=0, 
     elif dataset=="train":
         data_loader, _ = prepare_train_loaders(val_fold)
 
-    n_batches = int(n / data_loader.batch_size) + 1
+    n_batches = int(n / data_loader.batch_size) + (n % data_loader.batch_size)
 
     all_images = []
     all_segmented_images = []

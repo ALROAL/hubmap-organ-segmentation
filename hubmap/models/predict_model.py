@@ -11,6 +11,24 @@ def segment_images(model_type, path, images, device=CFG["device"]):
     segmented_images = nn.Sigmoid(model(images))
     return segmented_images
 
+def predict_with_smooth_windowing(model_type, path, images, window_size=512, subdivisions=2, nb_classes=1, device=CFG["device"]):
+
+    model = load_model(model_type, path, True, device)
+
+    images = images.permute(0,2,3,1)
+
+    segmented_images = []
+    for input_img in images:
+
+        seg_img = predict_img_with_smooth_windowing(input_img, window_size, subdivisions, nb_classes, 
+            pred_func = (lambda img_batch_subdiv: model((torch.tensor(img_batch_subdiv).to(device)))))
+        segmented_images.append(seg_img)
+    
+    segmented_images = np.array(segmented_images)
+    segmented_images = torch.tensor(segmented_images)
+
+    return segmented_images
+
 # MIT License
 # Copyright (c) 2017 Vooban Inc.
 # Coded by: Guillaume Chevalier
@@ -77,7 +95,7 @@ def _pad_img(img, window_size, subdivisions):
     more_borders = ((aug, aug), (aug, aug), (0, 0))
     ret = np.pad(img, pad_width=more_borders, mode='reflect')
     # gc.collect()
-
+    
     return ret
 
 
@@ -87,11 +105,7 @@ def _unpad_img(padded_img, window_size, subdivisions):
     Image is an np array of shape (x, y, nb_channels).
     """
     aug = int(round(window_size * (1 - 1.0/subdivisions)))
-    ret = padded_img[
-        aug:-aug,
-        aug:-aug,
-        :
-    ]
+    ret = padded_img[aug:-aug,aug:-aug,:]
     # gc.collect()
     return ret
 
@@ -173,13 +187,17 @@ def _windowed_subdivs(padded_img, window_size, subdivisions, nb_classes, pred_fu
     
     a, b, c, d, e = subdivs.shape
     
-    subdivs = subdivs.reshape(a * b, e, c, d)
-    gc.collect()
-
-    subdivs = pred_func(subdivs).permute(0,2,3,1).cpu().detach()
+    subdivs = subdivs.reshape(a * b, c, d, e)
     gc.collect()
     
-    subdivs = np.stack([patch * WINDOW_SPLINE_2D for patch in subdivs])
+    pred_subdivs = []
+    for subd in subdivs:
+        pred_subdiv = pred_func(np.transpose(np.expand_dims(subd,0), (0,3,1,2))).permute(0,2,3,1).cpu().detach()
+        pred_subdivs.append(pred_subdiv)
+    gc.collect()
+    
+    
+    subdivs = np.stack([patch * WINDOW_SPLINE_2D for patch in pred_subdivs])
     gc.collect()
 
     # Such 5D array:
@@ -246,32 +264,14 @@ def predict_img_with_smooth_windowing(input_img, window_size, subdivisions, nb_c
         one_padded_result = _recreate_from_subdivs(
             sd, window_size, subdivisions,
             padded_out_shape=list(pad.shape[:-1])+[nb_classes])
-
         res.append(one_padded_result)
 
     # Merge after rotations:
     padded_results = _rotate_mirror_undo(res)
-
+    
     prd = _unpad_img(padded_results, window_size, subdivisions)
 
     prd = prd[:input_img.shape[0], :input_img.shape[1], :]
 
     return prd
 
-def predict_with_smooth_windowing(model_type, path, images, window_size=256, subdivisions=2, nb_classes=1, device=CFG["device"]):
-
-    model = load_model(model_type, path, True, device)
-
-    images = images.permute(0,2,3,1)
-
-    segmented_images = []
-    for input_img in images:
-
-        seg_img = predict_img_with_smooth_windowing(input_img, window_size, subdivisions, nb_classes, 
-            pred_func = (lambda img_batch_subdiv: model((torch.tensor(img_batch_subdiv).to(device)))))
-        segmented_images.append(seg_img)
-    
-    segmented_images = np.array(segmented_images)
-    segmented_images = torch.tensor(segmented_images)
-
-    return segmented_images

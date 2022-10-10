@@ -6,7 +6,6 @@ with open(CONFIG_JSON_PATH) as f:
 import cv2
 import pandas as pd
 from sklearn.model_selection import GroupKFold, train_test_split
-import shutil
 from .utils import *
 
 
@@ -16,8 +15,6 @@ def create_datasets():
     MASKS_PATH.mkdir(parents=True, exist_ok=True)
     TRAIN_IMAGES_PATH.mkdir(parents=True, exist_ok=True)
     TRAIN_MASKS_PATH.mkdir(parents=True, exist_ok=True)
-    TEST_IMAGES_PATH.mkdir(parents=True, exist_ok=True)
-    TEST_MASKS_PATH.mkdir(parents=True, exist_ok=True)
 
     #Load images metadata from csv
     data = pd.read_csv(DATA_CSV_PATH)
@@ -52,22 +49,22 @@ def create_datasets():
         for i in range(n_rows):
             for j in range(n_cols):
 
-                    mask_path = TRAIN_MASKS_PATH / (str(row.id) + f"_{i}_{j}.png")
-                    mask_crop = mask[i*CFG["img_size"]:(i+1)*CFG["img_size"], j*CFG["img_size"]:(j+1)*CFG["img_size"]]
+                mask_path = TRAIN_MASKS_PATH / (str(row.id) + f"_{i}_{j}.png")
+                mask_crop = mask[i*CFG["img_size"]:(i+1)*CFG["img_size"], j*CFG["img_size"]:(j+1)*CFG["img_size"]]
 
-                    if mask_crop.sum() <= 0:
-                        continue
+                if mask_crop.sum() <= 0:
+                    continue
 
-                    img_path = TRAIN_IMAGES_PATH / (str(row.id) + f"_{i}_{j}.png")
-                    img_crop = img[i*CFG["img_size"]:(i+1)*CFG["img_size"], j*CFG["img_size"]:(j+1)*CFG["img_size"]]
-                    
-                    cv2.imwrite(str(img_path), img_crop)
-                    cv2.imwrite(str(mask_path), mask_crop)
+                img_path = TRAIN_IMAGES_PATH / (str(row.id) + f"_{i}_{j}.png")
+                img_crop = img[i*CFG["img_size"]:(i+1)*CFG["img_size"], j*CFG["img_size"]:(j+1)*CFG["img_size"]]
+                
+                cv2.imwrite(str(img_path), img_crop)
+                cv2.imwrite(str(mask_path), mask_crop)
 
-                    id_list.append(row.id)
-                    id_2_list.append(str(row.id) + f"_{i}_{j}")
-                    img_path_list.append(img_path)
-                    mask_path_list.append(mask_path)
+                id_list.append(row.id)
+                id_2_list.append(str(row.id) + f"_{i}_{j}")
+                img_path_list.append(img_path)
+                mask_path_list.append(mask_path)
 
     df = pd.DataFrame({"id":id_list, "id_2":id_2_list, "image_path":img_path_list, "mask_path":mask_path_list})
 
@@ -90,8 +87,9 @@ def create_datasets():
     #     mask_path_list.append(mask_path)
 
     test_data.drop("rle", axis=1, inplace=True)
-    test_data["mask_path"] = MASKS_PATH / (test_data["id"].apply(str) + ".png")
     test_data["image_path"] = IMAGES_PATH / (test_data["id"].apply(str) + ".tiff")
+    test_data["mask_path"] = MASKS_PATH / (test_data["id"].apply(str) + ".png")
+    
     test_data.to_csv(TEST_CSV_PATH, index=False)
 
 

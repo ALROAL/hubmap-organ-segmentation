@@ -1,4 +1,4 @@
-from ..PATHS import MASKS_PATH, TRAIN_CSV_PATH, TEST_CSV_PATH, CONFIG_JSON_PATH
+from ..PATHS import IMAGES_PATH, MASKS_PATH, TRAIN_CSV_PATH, TEST_CSV_PATH, CONFIG_JSON_PATH
 import json
 with open(CONFIG_JSON_PATH) as f:
     CFG = json.load(f)
@@ -108,8 +108,8 @@ def prepare_val_loader(fold, shuffle=False):
     valid_df.drop(columns="id_2", inplace=True)
     valid_df.drop_duplicates(subset="id", inplace=True)
     valid_df.reset_index(drop=True, inplace=True)
-    valid_df["image_path"] = MASKS_PATH / (valid_df["id"].apply(str) + ".tiff")
-    valid_df["mask_path"] = MASKS_PATH / (valid_df["id"].apply(str) + ".png")
+    valid_df["image_path"] = str(IMAGES_PATH) + valid_df["id"].apply(str) + ".tiff"
+    valid_df["mask_path"] = str(MASKS_PATH) + valid_df["id"].apply(str) + ".png"
 
     valid_dataset = HuBMAP_Dataset(valid_df, transforms=data_transforms['test'])
     valid_loader = torch.utils.data.DataLoader(valid_dataset, batch_size=1,

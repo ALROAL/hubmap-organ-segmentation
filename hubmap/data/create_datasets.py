@@ -49,13 +49,13 @@ def create_datasets():
         for i in range(n_rows):
             for j in range(n_cols):
 
-                mask_path = TRAIN_MASKS_PATH / (str(row.id) + f"_{i}_{j}.png")
+                mask_path = str(TRAIN_MASKS_PATH / (str(row.id) + f"_{i}_{j}.png"))
                 mask_crop = mask[i*CFG["img_size"]:(i+1)*CFG["img_size"], j*CFG["img_size"]:(j+1)*CFG["img_size"]]
 
                 if mask_crop.sum() <= 0:
                     continue
 
-                img_path = TRAIN_IMAGES_PATH / (str(row.id) + f"_{i}_{j}.png")
+                img_path = str(TRAIN_IMAGES_PATH / (str(row.id) + f"_{i}_{j}.png"))
                 img_crop = img[i*CFG["img_size"]:(i+1)*CFG["img_size"], j*CFG["img_size"]:(j+1)*CFG["img_size"]]
                 
                 cv2.imwrite(str(img_path), img_crop)
@@ -73,18 +73,6 @@ def create_datasets():
         df.loc[val_idx, 'fold'] = fold
 
     df.to_csv(TRAIN_CSV_PATH, index=False)
-
-    # mask_path_list = []
-    # for _, row in test_data.iterrows():
-
-    #     #Move image to test folder
-    #     shutil.copy(IMAGES_PATH / (str(row.id) + ".tiff"), TEST_IMAGES_PATH /(str(row.id) + ".tiff"))
-    #     #Read and save mask
-    #     mask = rle_decode(row.rle, (row.img_height, row.img_width))
-    #     mask_path = str(TEST_MASKS_PATH / (str(row.id) + ".png"))
-    #     cv2.imwrite(mask_path, mask)
-
-    #     mask_path_list.append(mask_path)
 
     test_data.drop("rle", axis=1, inplace=True)
     test_data["image_path"] = str(IMAGES_PATH) + df["id"].apply(str) + ".tiff"

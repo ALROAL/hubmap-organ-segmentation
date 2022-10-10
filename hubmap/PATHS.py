@@ -11,14 +11,13 @@ DATA_PATH = Path(CFG["data_path"]) if CFG["data_path"] else Path(os.sep.join(str
 
 IMAGES_PATH = DATA_PATH / "images"
 ANNOTATIONS_PATH = DATA_PATH / "annotations"
+MASKS_PATH = DATA_PATH / "masks"
 DATA_CSV_PATH = DATA_PATH / "data.csv"
 
 TRAIN_IMAGES_PATH = DATA_PATH / f"train_images_{CFG['img_size']}x{CFG['img_size']}"
 TRAIN_MASKS_PATH = DATA_PATH / f"train_masks_{CFG['img_size']}x{CFG['img_size']}"
 TRAIN_CSV_PATH = DATA_PATH / "train.csv"
 
-TEST_IMAGES_PATH = DATA_PATH / "test_images"
-TEST_MASKS_PATH = DATA_PATH / "test_masks"
 TEST_CSV_PATH = DATA_PATH / "test.csv"
 
 MODEL_PATH = (Path(CFG["model_path"]) if CFG["model_path"] else Path(os.sep.join(str(SRC_PATH).split(os.sep)[:-1] + ["models"]))) / CFG["model"]

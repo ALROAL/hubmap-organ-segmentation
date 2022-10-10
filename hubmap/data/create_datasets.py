@@ -13,6 +13,7 @@ from .utils import *
 def create_datasets():
 
     #Create folder to store cropped images
+    MASKS_PATH.mkdir(parents=True, exist_ok=True)
     TRAIN_IMAGES_PATH.mkdir(parents=True, exist_ok=True)
     TRAIN_MASKS_PATH.mkdir(parents=True, exist_ok=True)
     TEST_IMAGES_PATH.mkdir(parents=True, exist_ok=True)
@@ -33,6 +34,9 @@ def create_datasets():
         #Read image and its mask
         img = read_tiff(IMAGES_PATH / (str(row.id) + ".tiff"))
         mask = rle_decode(row.rle, (row.img_height, row.img_width))
+
+        mask_path = MASKS_PATH / (str(row.id) + ".png")
+        cv2.imwrite(str(mask_path), mask)
 
         #Compute number of crops
         n_rows = int(row.img_height // CFG["img_size"])+1
@@ -73,21 +77,21 @@ def create_datasets():
 
     df.to_csv(TRAIN_CSV_PATH, index=False)
 
-    mask_path_list = []
-    for _, row in test_data.iterrows():
+    # mask_path_list = []
+    # for _, row in test_data.iterrows():
 
-        #Move image to test folder
-        shutil.copy(IMAGES_PATH / (str(row.id) + ".tiff"), TEST_IMAGES_PATH /(str(row.id) + ".tiff"))
-        #Read and save mask
-        mask = rle_decode(row.rle, (row.img_height, row.img_width))
-        mask_path = str(TEST_MASKS_PATH / (str(row.id) + ".png"))
-        cv2.imwrite(mask_path, mask)
+    #     #Move image to test folder
+    #     shutil.copy(IMAGES_PATH / (str(row.id) + ".tiff"), TEST_IMAGES_PATH /(str(row.id) + ".tiff"))
+    #     #Read and save mask
+    #     mask = rle_decode(row.rle, (row.img_height, row.img_width))
+    #     mask_path = str(TEST_MASKS_PATH / (str(row.id) + ".png"))
+    #     cv2.imwrite(mask_path, mask)
 
-        mask_path_list.append(mask_path)
+    #     mask_path_list.append(mask_path)
 
     test_data.drop("rle", axis=1, inplace=True)
-    test_data["mask_path"] = mask_path_list
-    test_data["image_path"] = TEST_IMAGES_PATH / (test_data["id"].apply(str) + ".tiff")
+    test_data["mask_path"] = MASKS_PATH / (test_data["id"].apply(str) + ".png")
+    test_data["image_path"] = IMAGES_PATH / (test_data["id"].apply(str) + ".tiff")
     test_data.to_csv(TEST_CSV_PATH, index=False)
 
 

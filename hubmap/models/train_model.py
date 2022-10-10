@@ -3,7 +3,6 @@ import torch.nn as nn
 import torch
 from torch.cuda import amp
 import copy
-import segmentation_models_pytorch as smp
 from ..PATHS import CONFIG_JSON_PATH
 import json
 with open(CONFIG_JSON_PATH) as f:

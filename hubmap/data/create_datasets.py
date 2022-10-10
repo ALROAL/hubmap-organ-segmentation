@@ -75,8 +75,8 @@ def create_datasets():
     df.to_csv(TRAIN_CSV_PATH, index=False)
 
     test_data.drop("rle", axis=1, inplace=True)
-    test_data["image_path"] = str(IMAGES_PATH) + df["id"].apply(str) + ".tiff"
-    test_data["mask_path"] = str(MASKS_PATH) + df["id"].apply(str) + ".png"
+    test_data["image_path"] = str(IMAGES_PATH) + "/" + df["id"].apply(str) + ".tiff"
+    test_data["mask_path"] = str(MASKS_PATH) + "/" + df["id"].apply(str) + ".png"
     
     test_data.to_csv(TEST_CSV_PATH, index=False)
 

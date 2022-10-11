@@ -52,9 +52,6 @@ def create_datasets():
                 mask_path = str(TRAIN_MASKS_PATH / (str(row.id) + f"_{i}_{j}.png"))
                 mask_crop = mask[i*CFG["img_size"]:(i+1)*CFG["img_size"], j*CFG["img_size"]:(j+1)*CFG["img_size"]]
 
-                if mask_crop.sum() <= 0:
-                    continue
-
                 img_path = str(TRAIN_IMAGES_PATH / (str(row.id) + f"_{i}_{j}.png"))
                 img_crop = img[i*CFG["img_size"]:(i+1)*CFG["img_size"], j*CFG["img_size"]:(j+1)*CFG["img_size"]]
                 

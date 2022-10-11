@@ -101,7 +101,7 @@ def create_datasets():
     test_data["mask_path"] = str(MASKS_PATH) + "/" + test_data["id"].apply(str) + ".png"
 
     kf = GroupKFold(n_splits=CFG["n_folds"])
-    for fold, (train_idx, val_idx) in enumerate(kf.split(train_data), groups=train_data['id']):
+    for fold, (train_idx, val_idx) in enumerate(kf.split(train_data, groups=train_data['id'])):
         train_data.loc[val_idx, 'fold'] = fold
 
     test_data.to_csv(TEST_CSV_PATH, index=False)

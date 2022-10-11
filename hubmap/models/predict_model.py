@@ -91,6 +91,7 @@ def _pad_img(img, window_size, subdivisions):
     "subdivisions".
     Image is an np array of shape (x, y, nb_channels).
     """
+    img = img.cpu()
     aug = int(round(window_size * (1 - 1.0/subdivisions)))
     more_borders = ((aug, aug), (aug, aug), (0, 0))
     ret = np.pad(img, pad_width=more_borders, mode='reflect')

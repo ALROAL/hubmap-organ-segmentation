@@ -111,7 +111,7 @@ class UNet(nn.Module):
         if self.inference:
             out = nn.Sigmoid()(out)
         if self.upscale:
-            out = F.interpolate(out, (CFG["img_size"], CFG["img_size"]))
+            out = F.interpolate(out, (CFG["img_size"], CFG["img_size"]), mode="bilinear")
         return out
 
     

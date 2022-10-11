@@ -91,7 +91,7 @@ def create_datasets():
         cv2.imwrite(str(mask_path), mask)
 
     data = data[["id", "organ", "data_source", "img_height", "img_width"]]
-    
+
     #Create train/test split
     train_data, test_data = train_test_split(data, test_size=CFG["test_size"], stratify=data["organ"], random_state=CFG["seed"])
 
@@ -101,7 +101,7 @@ def create_datasets():
     test_data["mask_path"] = str(MASKS_PATH) + "/" + test_data["id"].apply(str) + ".png"
 
     kf = GroupKFold(n_splits=CFG["n_folds"])
-    for fold, (train_idx, val_idx) in enumerate(kf.split(train_data)):
+    for fold, (train_idx, val_idx) in enumerate(kf.split(train_data), groups=train_data['id']):
         train_data.loc[val_idx, 'fold'] = fold
 
     test_data.to_csv(TEST_CSV_PATH, index=False)

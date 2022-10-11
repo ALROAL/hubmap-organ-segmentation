@@ -94,6 +94,8 @@ def create_datasets():
 
     #Create train/test split
     train_data, test_data = train_test_split(data, test_size=CFG["test_size"], stratify=data["organ"], random_state=CFG["seed"])
+    train_data.reset_index(drop=True, inplace=True)
+    test_data.reset_index(drop=True, inplace=True)
 
     train_data["image_path"] = str(IMAGES_PATH) + "/" + train_data["id"].apply(str) + ".tiff"
     train_data["mask_path"] = str(MASKS_PATH) + "/" + train_data["id"].apply(str) + ".png"

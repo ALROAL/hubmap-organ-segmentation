@@ -271,7 +271,7 @@ def predict_img_with_smooth_windowing(input_img, window_size, subdivisions, nb_c
     
     prd = _unpad_img(padded_results, window_size, subdivisions)
 
-    prd = prd[:input_img.shape[0], :input_img.shape[1], :]
+    prd = np.transpose(prd[:input_img.shape[0], :input_img.shape[1], :], (2,0,1))
 
     return prd
 

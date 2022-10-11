@@ -15,18 +15,12 @@ def evaluate_model(model_type, model_path, dataset="test", val_fold=0, device=CF
     else:
         data_loader = prepare_val_loader(val_fold)
 
-    all_segmented_images =  []
-    all_masks = []
+    all_segmented_images =  torch.tensor([])
+    all_masks = torch.tensor([])
     for images, masks in data_loader:
         segmented_batch = predict_with_smooth_windowing(model_type, model_path, images, window_size=512, subdivisions=2, nb_classes=1, device=device)
-        all_segmented_images.append(segmented_batch)
-        all_masks.append(masks)
-    
-    all_segmented_images = np.array(all_segmented_images)
-    all_segmented_images = torch.tensor(all_segmented_images)
-
-    all_masks = np.array(all_masks)
-    all_masks = torch.tensor(all_masks)
+        all_segmented_images = torch.cat((all_segmented_images, segmented_batch), 0)
+        all_masks = torch.cat((all_masks, masks), 0)
 
     dice_loss = DiceLoss(mode='binary')(all_segmented_images, all_masks)
 

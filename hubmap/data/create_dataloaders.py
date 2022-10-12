@@ -37,7 +37,7 @@ class HuBMAP_Dataset(torch.utils.data.Dataset):
                 data = self.transforms(image=img, mask=mask)
                 img  = data['image']
             if self.evaluation_transforms:
-                data = self.evaluation_transforms(mask=mask)
+                data = self.evaluation_transforms(image=img, mask=mask)
 
             mask  = data['mask']
             

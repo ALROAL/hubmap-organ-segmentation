@@ -21,7 +21,8 @@ def evaluate_model(model_type, model_path, batch_size=1, dataset="test", val_fol
     dice_score_sum = 0
     n_samples=0
     for images, masks, H, W in data_loader:
-
+        H = int(H)
+        W = int(W)
         images = images.to(device, dtype=torch.float)
         masks  = masks.to(device, dtype=torch.float)
 

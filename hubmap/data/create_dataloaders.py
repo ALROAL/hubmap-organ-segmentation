@@ -46,7 +46,7 @@ class HuBMAP_Dataset(torch.utils.data.Dataset):
 #             mask = np.transpose(mask, (2, 0, 1))
 
             if self.evaluation:
-                return torch.tensor(img), torch.tensor(mask), self.df.loc[index, 'img_height'], self.df.loc[index, 'img_width']
+                return torch.tensor(img), torch.tensor(mask), int(self.df.loc[index, 'img_height']), int(self.df.loc[index, 'img_width'])
             else:
                 return torch.tensor(img), torch.tensor(mask)
         

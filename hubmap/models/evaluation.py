@@ -30,9 +30,9 @@ def evaluate_model(model_type, model_path, batch_size=1, dataset="test", val_fol
 
         segmented_batch = model(images).permute(0,2,3,1).cpu().detach().numpy()
         resized_segmented_batch = torch.tensor([]).to(device, dtype=torch.float)
-        for segmented_image in segmented_batch: #have to zip image to H, W
+        for i,segmented_image in enumerate(segmented_batch): #have to zip image to H, W
 
-            segmented_image = cv2.resize(segmented_image, (H, W))
+            segmented_image = cv2.resize(segmented_image, (int(H[i]), int(W[i])))
             segmented_image = np.expand_dims(segmented_image, (0,1))
             segmented_image = torch.tensor(segmented_image).to(device, dtype=torch.float)
             resized_segmented_batch = torch.cat((resized_segmented_batch, segmented_image))

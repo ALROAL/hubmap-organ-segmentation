@@ -28,7 +28,7 @@ def evaluate_model(model_type, model_path, batch_size=1, dataset="test", val_fol
         batch_size = images.size(0)
         n_samples += batch_size
 
-        segmented_batch = model(images).permute().permute(0,2,3,1).cpu().detach().numpy()
+        segmented_batch = model(images).permute(0,2,3,1).cpu().detach().numpy()
         resized_segmented_batch = torch.tensor([])
         for segmented_image in segmented_batch:
 

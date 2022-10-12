@@ -11,10 +11,12 @@ from .utils import *
 
 
 class HuBMAP_Dataset(torch.utils.data.Dataset):
-    def __init__(self, df, labeled=True, transforms=None):
+    def __init__(self, df, labeled=True, transforms=None, evaluation=False, evaluation_transforms=None):
         self.df = df
         self.labeled = labeled
         self.transforms = transforms
+        self.evaluation_transforms = evaluation_transforms
+        self.evaluation = evaluation
         
     def __len__(self):
         return len(self.df)
@@ -34,13 +36,19 @@ class HuBMAP_Dataset(torch.utils.data.Dataset):
             if self.transforms:
                 data = self.transforms(image=img, mask=mask)
                 img  = data['image']
-                mask  = data['mask']
+            if self.evaluation_transforms:
+                data = self.evaluation_transforms(mask=mask)
+
+            mask  = data['mask']
             
             mask = np.expand_dims(mask, axis=0)
             img = np.transpose(img, (2, 0, 1))
 #             mask = np.transpose(mask, (2, 0, 1))
-            
-            return torch.tensor(img), torch.tensor(mask)
+
+            if self.evaluation:
+                return torch.tensor(img), torch.tensor(mask), self.df.loc[index, 'img_height'], self.df.loc[index, 'img_width']
+            else:
+                return torch.tensor(img), torch.tensor(mask)
         
         else:
             if self.transforms:
@@ -91,28 +99,22 @@ def prepare_train_loaders(fold, val_shuffle=False):
     
     return train_loader, valid_loader
 
-def prepare_test_loader(shuffle=False):
+def prepare_test_loader(batch_size=1, shuffle=False):
 
     test_df = pd.read_csv(TEST_CSV_PATH)
-    test_dataset = HuBMAP_Dataset(test_df, transforms=data_transforms['test'])
-    test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=1,
+    test_dataset = HuBMAP_Dataset(test_df, transforms=data_transforms['valid'], evaluation=True, evaluation_transforms=data_transforms['test'])
+    test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=batch_size,
         num_workers=CFG["num_workers"], shuffle=shuffle)
 
     return test_loader
 
-def prepare_val_loader(fold, shuffle=False):
+def prepare_val_loader(fold, batch_size=1, shuffle=False):
 
     df = pd.read_csv(TRAIN_CSV_PATH)
-
     valid_df = df[df["fold"]==fold].reset_index(drop=True)
-    # valid_df.drop(columns="id_2", inplace=True)
-    # valid_df.drop_duplicates(subset="id", inplace=True)
-    # valid_df.reset_index(drop=True, inplace=True)
-    # valid_df["image_path"] = str(IMAGES_PATH) + "/" + valid_df["id"].apply(str) + ".tiff"
-    # valid_df["mask_path"] = str(MASKS_PATH) + "/" + valid_df["id"].apply(str) + ".png"
 
-    valid_dataset = HuBMAP_Dataset(valid_df, transforms=data_transforms['test'])
-    valid_loader = torch.utils.data.DataLoader(valid_dataset, batch_size=1,
+    valid_dataset = HuBMAP_Dataset(valid_df, transforms=data_transforms['valid'], evaluation=True, evaluation_transforms=data_transforms['test'])
+    valid_loader = torch.utils.data.DataLoader(valid_dataset, batch_size=batch_size,
         num_workers=CFG["num_workers"], shuffle=shuffle)
 
     return valid_loader

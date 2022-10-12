@@ -21,8 +21,7 @@ def evaluate_model(model_type, model_path, batch_size=1, dataset="test", val_fol
     dice_score_sum = 0
     n_samples=0
     for images, masks, H, W in data_loader:
-        H = int(H)
-        W = int(W)
+
         images = images.to(device, dtype=torch.float)
         masks  = masks.to(device, dtype=torch.float)
 
@@ -30,8 +29,8 @@ def evaluate_model(model_type, model_path, batch_size=1, dataset="test", val_fol
         n_samples += batch_size
 
         segmented_batch = model(images).permute(0,2,3,1).cpu().detach().numpy()
-        resized_segmented_batch = torch.tensor([])
-        for segmented_image in segmented_batch:
+        resized_segmented_batch = torch.tensor([]).to(device, dtype=torch.float)
+        for segmented_image in segmented_batch: #have to zip image to H, W
 
             segmented_image = cv2.resize(segmented_image, (H, W))
             segmented_image = np.expand_dims(segmented_image, (0,1))

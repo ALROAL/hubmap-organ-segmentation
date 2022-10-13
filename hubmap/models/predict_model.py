@@ -24,6 +24,8 @@ def predict_batch(model_type, model_path, images, H, W, threshold=0.5, device=CF
     if threshold:
         resized_segmented_batch = (resized_segmented_batch>threshold).to(device ,dtype=torch.float)
     
+    return resized_segmented_batch
+    
 
 
 def segment_images(model_type, path, images, device=CFG["device"]):

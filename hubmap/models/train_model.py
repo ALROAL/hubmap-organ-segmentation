@@ -3,12 +3,13 @@ import torch.nn as nn
 import torch
 from torch.cuda import amp
 import copy
-from ..PATHS import CONFIG_JSON_PATH
+from ..PATHS import CONFIG_JSON_PATH, MODEL_PATH
 import json
 with open(CONFIG_JSON_PATH) as f:
     CFG = json.load(f)
 from .models import build_model, save_model
 from .losses import *
+from .evaluation import evaluate_model
 from hubmap.data.create_dataloaders import prepare_train_loaders, prepare_test_loader
 import wandb
 
@@ -171,6 +172,7 @@ def run_training(model, train_loader, val_loader, criterion, optimizer, schedule
 
 def train(config):
 
+    model_type = CFG["model"]
     for fold in range(CFG["n_folds"]):
 
         model = build_model()
@@ -180,11 +182,21 @@ def train(config):
         optimizer = get_optimizer(model)
         scheduler = get_scheduler(optimizer)
 
-        wandb.init(project="hubmap-organ-segmentation", group=CFG["model"], config=config, job_type='train', name=f'fold_{fold}')
+        wandb.init(project="hubmap-organ-segmentation", group=model_type, config=config, job_type='train', name=f'fold_{fold}')
 
         model = run_training(model, train_loader, val_loader, criterion, optimizer, scheduler)
         model_name = f'model_fold_{fold}.pth'
         save_model(model, model_name)
+
+        val_loss = valid_one_epoch(model, val_loader)
+        for k, v in val_loss.items():
+            wandb.run.summary[f"val_{k}"] = v
+        
+        model_path = str(MODEL_PATH / model_name)
+        val_dice_score = evaluate_model(model_type, model_path, batch_size=CFG["batch_size"], dataset="val", val_fold=fold)
+        test_dice_score = evaluate_model(model_type, model_path, batch_size=CFG["batch_size"], dataset="test")
+        wandb.run.summary["val_dice_score"] = test_dice_score
+        wandb.run.summary["test_dice_score"] = val_dice_score
 
         wandb.join()
 

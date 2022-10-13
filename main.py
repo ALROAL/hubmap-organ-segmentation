@@ -1,6 +1,4 @@
 import argparse
-from hubmap.data.create_datasets import create_datasets
-from hubmap.models.pipeline import model_pipeline
 import json
 from hubmap.PATHS import CONFIG_JSON_PATH
 from hubmap.config import CFG
@@ -137,6 +135,10 @@ if __name__ == "__main__":
 
     with open(CONFIG_JSON_PATH, 'w') as f:
         json.dump(CFG, f, indent=1)
+
+
+    from hubmap.data.create_datasets import create_datasets
+    from hubmap.models.pipeline import model_pipeline
 
     create_datasets()
     model_pipeline()

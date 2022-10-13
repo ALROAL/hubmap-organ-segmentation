@@ -99,15 +99,6 @@ def prepare_train_loaders(fold, val_shuffle=False):
     
     return train_loader, valid_loader
 
-def prepare_test_loader(batch_size=1, shuffle=False):
-
-    test_df = pd.read_csv(TEST_CSV_PATH)
-    test_dataset = HuBMAP_Dataset(test_df, transforms=data_transforms['valid'], evaluation=True, evaluation_transforms=data_transforms['test'])
-    test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=batch_size,
-        num_workers=CFG["num_workers"], shuffle=shuffle)
-
-    return test_loader
-
 def prepare_val_loader(fold, batch_size=1, shuffle=False):
 
     df = pd.read_csv(TRAIN_CSV_PATH)
@@ -115,6 +106,15 @@ def prepare_val_loader(fold, batch_size=1, shuffle=False):
 
     valid_dataset = HuBMAP_Dataset(valid_df, transforms=data_transforms['valid'], evaluation=True, evaluation_transforms=data_transforms['test'])
     valid_loader = torch.utils.data.DataLoader(valid_dataset, batch_size=batch_size,
-        num_workers=CFG["num_workers"], shuffle=shuffle)
+        num_workers=CFG["num_workers"], shuffle=shuffle, drop_last=False)
 
     return valid_loader
+
+def prepare_test_loader(batch_size=1, shuffle=False):
+
+    test_df = pd.read_csv(TEST_CSV_PATH)
+    test_dataset = HuBMAP_Dataset(test_df, transforms=data_transforms['valid'], evaluation=True, evaluation_transforms=data_transforms['test'])
+    test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=batch_size,
+        num_workers=CFG["num_workers"], shuffle=shuffle, drop_last=False)
+
+    return test_loader

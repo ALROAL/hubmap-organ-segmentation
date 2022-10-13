@@ -9,7 +9,8 @@ from hubmap.models import load_model
 from segmentation_models_pytorch.losses import DiceLoss
 import cv2
 
-def evaluate_model(model_type, model_path, batch_size=1, dataset="test", val_fold=0, device=CFG["device"]):
+@torch.no_grad()
+def evaluate_model(model_type, model_path, threshold=0.5, batch_size=1, dataset="test", val_fold=0, device=CFG["device"]):
 
     model = load_model(model_type, model_path, inference=True, device=device)
 
@@ -30,13 +31,14 @@ def evaluate_model(model_type, model_path, batch_size=1, dataset="test", val_fol
 
         segmented_batch = model(images).permute(0,2,3,1).cpu().detach().numpy()
         resized_segmented_batch = torch.tensor([]).to(device, dtype=torch.float)
-        for i,segmented_image in enumerate(segmented_batch): #have to zip image to H, W
-
+        for i,segmented_image in enumerate(segmented_batch):
             segmented_image = cv2.resize(segmented_image, (int(H[i]), int(W[i])))
             segmented_image = np.expand_dims(segmented_image, (0,1))
             segmented_image = torch.tensor(segmented_image).to(device, dtype=torch.float)
             resized_segmented_batch = torch.cat((resized_segmented_batch, segmented_image))
 
+        #compute hard dice score
+        resized_segmented_batch =(resized_segmented_batch>threshold).to("cuda",dtype=torch.float)
         dice_score_sum += (1 - DiceLoss(mode='binary', from_logits=False)(resized_segmented_batch, masks))*batch_size
 
     dice_score = dice_score_sum / n_samples

@@ -9,12 +9,12 @@ import torch
 import matplotlib.pyplot as plt
 
 
-def visualize_random_segmentations(model_type, model_path, dataset="val", val_fold=0, n=5, threshold=0.5, batch_size=1, device=CFG["device"]):
+def visualize_random_segmentations(model_type, model_path, dataset="val", val_fold=0, n=5, threshold=0.5, batch_size=1, shuffle=True, device=CFG["device"]):
 
     if dataset=="test":
-        data_loader = prepare_test_loader(batch_size, shuffle=True)
+        data_loader = prepare_test_loader(batch_size, shuffle=shuffle)
     elif dataset=="val":
-        data_loader = prepare_val_loader(val_fold, batch_size, val_shuffle=True)
+        data_loader = prepare_val_loader(val_fold, batch_size, shuffle=shuffle)
 
     n_batches = int(n / data_loader.batch_size) + (n % data_loader.batch_size)
 

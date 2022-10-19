@@ -33,11 +33,12 @@ def visualize_random_segmentations(model_type, model_path, dataset="val", val_fo
         all_masks += [masks[0]]
 
     f, axes = plt.subplots(n, 3, figsize=(15, 15))
-    axes[0,0].set_title("Image")
-    axes[0,1].set_title("Ground Truth")
-    axes[0,2].set_title("Segmentation")
+    axes = axes.flatten()
+    axes[0].set_title("Image")
+    axes[1].set_title("Ground Truth")
+    axes[2].set_title("Segmentation")
 
     for i in range(n):
-        axes[i,0].imshow(all_images[i].permute(1,2,0).cpu().detach())
-        axes[i,1].imshow(all_masks[i].permute(1,2,0).cpu().detach())
-        axes[i,2].imshow(all_segmented_images[i].permute(1,2,0).cpu().detach())
+        axes[3*i].imshow(all_images[i].permute(1,2,0).cpu().detach())
+        axes[3*i + 1].imshow(all_masks[i].permute(1,2,0).cpu().detach())
+        axes[3*i + 2].imshow(all_segmented_images[i].permute(1,2,0).cpu().detach())

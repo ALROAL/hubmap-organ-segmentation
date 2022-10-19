@@ -28,13 +28,9 @@ def visualize_random_segmentations(model_type, model_path, dataset="val", val_fo
 
         segmented_images = predict_batch(model_type, model_path, images, H, W, threshold, device=CFG["device"])
 
-        all_images.append(images)
-        all_segmented_images.append(segmented_images)
-        all_masks.append(masks)
-    
-    all_images = torch.cat(all_images[:n]).permute(0,2,3,1).cpu().detach()
-    all_segmented_images = torch.cat(all_segmented_images[:n]).permute(0,2,3,1).cpu().detach()
-    all_masks = torch.cat(all_masks[:n]).permute(0,2,3,1).cpu().detach()
+        all_images += [images.permute(0,2,3,1).cpu().detach()[0]]
+        all_segmented_images += segmented_images
+        all_masks += [masks.permute(0,2,3,1).cpu().detach()[0]]
 
     f, axes = plt.subplots(n, 3, figsize=(15, 15))
     axes[0,0].set_title("Image")

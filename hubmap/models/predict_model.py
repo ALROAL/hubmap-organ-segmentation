@@ -19,7 +19,7 @@ def predict_batch(model_type, model_path, images, H, W, threshold=0.5, device=CF
         segmented_image = cv2.resize(segmented_image, (int(H[i]), int(W[i])))
         segmented_image = np.expand_dims(segmented_image, (0,1))
         if threshold:
-            segmented_image = (resized_segmented_batch>threshold).to(device ,dtype=torch.float)
+            segmented_image = torch.tensor(segmented_image>threshold).to(device ,dtype=torch.float)
         else:
             segmented_image = torch.tensor(segmented_image).to(device, dtype=torch.float)
         resized_segmented_batch.append(segmented_image)

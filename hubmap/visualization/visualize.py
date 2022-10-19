@@ -28,9 +28,9 @@ def visualize_random_segmentations(model_type, model_path, dataset="val", val_fo
 
         segmented_images = predict_batch(model_type, model_path, images, H, W, threshold, device=CFG["device"])
 
-        all_images += [images.permute(0,2,3,1).cpu().detach()[0]]
+        all_images += [images[0].permute(1,2,0)]
         all_segmented_images += segmented_images
-        all_masks += [masks.permute(0,2,3,1).cpu().detach()[0]]
+        all_masks += [masks[0].permute(1,2,0)]
 
     f, axes = plt.subplots(n, 3, figsize=(15, 15))
     axes[0,0].set_title("Image")
@@ -38,6 +38,6 @@ def visualize_random_segmentations(model_type, model_path, dataset="val", val_fo
     axes[0,2].set_title("Segmentation")
 
     for i in range(n):
-        axes[i,0].imshow(all_images[i])
-        axes[i,1].imshow(all_masks[i])
-        axes[i,2].imshow(all_segmented_images[i])
+        axes[i,0].imshow(all_images[i].cpu().detach())
+        axes[i,1].imshow(all_masks[i].cpu().detach())
+        axes[i,2].imshow(all_segmented_images[i].cpu().detach())

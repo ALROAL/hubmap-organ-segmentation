@@ -29,8 +29,8 @@ The project implements the UNet architecture from [U-Net: Convolutional Networks
 ## Usage
 
 ```console
-> python main.py -h
-usage: main.py [-h] [--data_path DATA_PATH] [--num_classes NUM_CLASSES] [--img_size IMG_SIZE] [--model_path MODEL_PATH] [--seed SEED] [--test_size TEST_SIZE] [--n_folds N_FOLDS] [--model MODEL] [--epochs EPOCHS]
+> python train.py -h
+usage: train.py [-h] [--data_path DATA_PATH] [--num_classes NUM_CLASSES] [--img_size IMG_SIZE] [--model_path MODEL_PATH] [--seed SEED] [--test_size TEST_SIZE] [--n_folds N_FOLDS] [--model MODEL] [--epochs EPOCHS]
                [--batch_size BATCH_SIZE] [--loss LOSS] [--optimizer OPTIMIZER] [--lr LR] [--weight_decay WEIGHT_DECAY] [--scheduler SCHEDULER] [--n_accumulate N_ACCUMULATE] [--device DEVICE]
                [--num-workers NUM_WORKERS]
 

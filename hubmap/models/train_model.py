@@ -199,31 +199,3 @@ def train(config):
         wandb.run.summary["test_dice_score"] = val_dice_score
 
         wandb.join()
-
-    return model
-
-@torch.no_grad()
-def test(model):
-    test_loader = prepare_test_loader()
-    model.eval()
-    loss = get_loss()
-    
-    iou_sum = 0
-    loss_sum = 0
-    n_samples = 0
-    
-    for images, masks in test_loader:        
-        images = images.to(CFG["device"], dtype=torch.float)
-        masks  = masks.to(CFG["device"], dtype=torch.float)
-
-        batch_size = images.size(0)
-        n_samples += batch_size
-        
-        y_pred = model(images)
-        iou_sum += iou_coef(y_pred, masks)
-        loss_sum += loss(y_pred, masks)
-        
-    test_iou_score = iou_sum / n_samples
-    test_loss = loss_sum / n_samples
-    torch.cuda.empty_cache()
-    return test_loss, test_iou_score

@@ -5,21 +5,11 @@ with open(CONFIG_JSON_PATH) as f:
 import torch, torchvision
 import torch.nn as nn
 import torch.nn.functional as F
-import segmentation_models_pytorch as smp
 
 def build_model(model_type=CFG["model"], inference=False, device=CFG["device"]):
 
     if model_type == "UNet":
         model = UNet(inference=inference)
-
-    elif model_type == "BackboneUnet":
-        model = smp.Unet(
-        encoder_name="efficientnet-b3",      
-        encoder_weights="imagenet",     
-        in_channels=3,                  
-        classes=1,
-        activation=None,
-    )
         
     model.to(device)
 
